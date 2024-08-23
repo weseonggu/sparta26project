@@ -1,4 +1,4 @@
-package com.sparta26.baemin.entity;
+package com.sparta26.baemin.entity.abcd;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Member {
+public class Abcd {
 
     @Id
     @GeneratedValue
