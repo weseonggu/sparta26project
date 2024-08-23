@@ -1,0 +1,16 @@
+version: '2'
+networks:
+  app-tier:
+    driver: bridge
+services:
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    networks:
+      - app-tier
+    environment:
+      - POSTGRESQL_USERNAME=sparta
+      - POSTGRESQL_PASSWORD=sparta26
+      - POSTGRESQL_DATABASE=delivery
+      - POSTGRESQL_ROOT_PASSWORD=rootpassword
+    ports:
+      - "5432:5432"

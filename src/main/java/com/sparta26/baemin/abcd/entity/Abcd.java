@@ -1,4 +1,4 @@
-package com.sparta26.baemin.entity.abcd;
+package com.sparta26.baemin.abcd.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,3 +13,4 @@ public class Abcd {
     @GeneratedValue
     private Long id;
 }
+
