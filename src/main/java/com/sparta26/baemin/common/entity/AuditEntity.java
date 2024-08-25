@@ -1,4 +1,4 @@
-package com.sparta26.baemin.common;
+package com.sparta26.baemin.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
 package com.sparta26.baemin.product.entity;
 
-import com.sparta26.baemin.common.AuditEntity;
+import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.exception.NotEnoughStockException;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;

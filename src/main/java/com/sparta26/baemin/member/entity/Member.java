@@ -1,7 +1,7 @@
 package com.sparta26.baemin.member.entity;
 
 import com.sparta26.baemin.address.entity.Address;
-import com.sparta26.baemin.common.AuditEntity;
+import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
@@ -37,12 +37,12 @@ public class Member extends AuditEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role; // MEMBER, MANAGER, ADMIN
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Store> stores = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 }
