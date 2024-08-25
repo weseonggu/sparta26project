@@ -1,7 +1,7 @@
 package com.sparta26.baemin.product.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
-import com.sparta26.baemin.exception.NotEnoughStockException;
+import com.sparta26.baemin.exception.exceptionsdefined.NotEnoughStockException;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -69,14 +69,24 @@ public class Product extends AuditEntity {
         store.getProducts().add(this);
     }
 
-   // stock 증가 메서드
+
+    /**
+     * stock 증가 메서드
+     * @param quantity
+     * @return stock
+     */
     public Integer addStock(Integer quantity) {
         this.stockQuantity += quantity;
         return this.stockQuantity;
     }
 
-    // stock 감소 메서드
-    public Integer removeStock(Integer stockQuantity) {
+    /**
+     * stock 감소 메서드
+     * @param stockQuantity 감소할 수
+     * @return 수량
+     * @throws NotEnoughStockException 호출한곳에서 예외처리 필요
+     */
+    public Integer removeStock(Integer stockQuantity) throws NotEnoughStockException {
         int restStock = this.stockQuantity - stockQuantity;
         if(restStock < 0) {
             throw new NotEnoughStockException("need more stock");
