@@ -19,7 +19,7 @@ public class AuditEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @CreatedBy
     @Column(name = "created_by", updatable = false)
@@ -35,12 +35,17 @@ public class AuditEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
     @Column(name = "deleted_by")
     private String deletedBy;
+
     @Column(name = "is_public")
     private boolean isPublic = true;
 
-    // 데이터 삭제 시 비공개 전환
+    /**
+     * 데이터 삭제 요청시 정보공개 여부를 False로 변경
+     * @param username
+     */
     public void delete(String username) {
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = username;
