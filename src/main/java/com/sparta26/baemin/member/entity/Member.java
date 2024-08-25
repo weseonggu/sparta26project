@@ -37,12 +37,12 @@ public class Member extends AuditEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role; // MEMBER, MANAGER, ADMIN
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Store> stores = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 }
