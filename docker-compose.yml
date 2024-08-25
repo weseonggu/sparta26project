@@ -1,12 +1,24 @@
-version: '2'
+version: '3.8'
+
 networks:
   app-tier:
     driver: bridge
+
 services:
-  postgresql:
-    image: 'bitnami/postgresql:latest'
+  redis-stack:
+    image: redis/redis-stack
+    container_name: redis-stack-compose
+    restart: always
+    command: ["redis-server", "--requirepass", "systempass"]
+    ports:
+      - "6379:6379"
+      - "8001:8001"
     networks:
       - app-tier
+
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    container_name: postgresql-compose
     environment:
       - POSTGRESQL_USERNAME=sparta
       - POSTGRESQL_PASSWORD=sparta26
@@ -14,3 +26,5 @@ services:
       - POSTGRESQL_ROOT_PASSWORD=rootpassword
     ports:
       - "5432:5432"
+    networks:
+      - app-tier

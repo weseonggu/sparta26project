@@ -2,12 +2,18 @@ spring:
   application:
     name: baemin
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: default
+      password: systempass
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/delivery
     username: sparta
     password: sparta26
-
 
   jpa:
     hibernate:
