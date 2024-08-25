@@ -27,24 +27,28 @@ public class Store extends AuditEntity {
 
     @Column(nullable = false)
     private String name;
+
     private String description;
 
     @Column(name = "opening_time")
     private String openingTime;
+
     @Column(name = "closing_time")
     private String closingTime;
+
     @Column(name = "open_days")
     private String openDays;
 
     @Column(nullable = false)
     private String address;
+
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Column(name = "is_active")
     private boolean isActive = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -62,9 +66,7 @@ public class Store extends AuditEntity {
         this.openDays = openDays;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        if (member != null) {
-            addMember(member);
-        }
+        this.member=member;
     }
 
     //== 생성 메서드 ==//
@@ -73,10 +75,7 @@ public class Store extends AuditEntity {
     }
 
     
-    public void addMember(Member member) {
-        this.member = member;
-        member.getStores().add(this);
-    }
+
 
     // 활성화 상태 변경
     public void changeActive() {

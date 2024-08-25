@@ -40,8 +40,8 @@ public class Member extends AuditEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Store> stores = new ArrayList<>();
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    private Store store;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();

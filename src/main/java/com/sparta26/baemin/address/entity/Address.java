@@ -1,5 +1,6 @@
 package com.sparta26.baemin.address.entity;
 
+import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_ADDRESS")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Address {
+public class Address extends AuditEntity {
 
     @Id
     @Column(name = "zip_code")
