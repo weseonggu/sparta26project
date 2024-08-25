@@ -1,6 +1,6 @@
 package com.sparta26.baemin.payment.entity;
 
-import com.sparta26.baemin.common.AuditEntity;
+import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

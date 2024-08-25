@@ -1,6 +1,6 @@
 package com.sparta26.baemin.ai.entity;
 
-import com.sparta26.baemin.common.AuditEntity;
+import com.sparta26.baemin.common.entity.AuditEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

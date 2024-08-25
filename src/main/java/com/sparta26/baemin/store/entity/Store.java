@@ -1,6 +1,6 @@
 package com.sparta26.baemin.store.entity;
 
-import com.sparta26.baemin.common.AuditEntity;
+import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.product.entity.Product;
