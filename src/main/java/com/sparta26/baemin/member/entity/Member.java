@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -37,12 +38,34 @@ public class Member extends AuditEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role; // MEMBER, MANAGER, ADMIN
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany @JoinColumn(name = "member_id")
     private List<Address> addresses = new ArrayList<>();
-
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
-    private Store store;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
+
+    public Member(String email, String password, String username, String nickname, UserRole role, Address... addresses) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.nickname = nickname;
+        this.role = role;
+        if (addresses != null) {
+            addAddress(addresses);
+        }
+        super.addCreatedBy(username);
+    }
+
+    /**
+     * 생성 메서드
+     */
+    public static Member createMember(String email, String password, String username, String nickname, UserRole role, Address... addresses) {
+        return new Member(email, password, username, nickname, role, addresses);
+    }
+
+    public void addAddress(Address... address) {
+        addresses.addAll(Arrays.asList(address));
+    }
+
+
 }

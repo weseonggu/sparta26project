@@ -2,6 +2,7 @@ package com.sparta26.baemin.store.entity;
 
 import com.sparta26.baemin.category.entity.Category;
 import com.sparta26.baemin.common.entity.AuditEntity;
+import com.sparta26.baemin.deliveryzone.entity.DeliveryZone;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.product.entity.Product;
@@ -60,8 +61,10 @@ public class Store extends AuditEntity {
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "store")
-    private List<Category> categories = new ArrayList<>();
+    private List<DeliveryZone> deliveryZones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store")
+    private List<Category> categories = new ArrayList<>();
 
     public Store(String name, String description, String openingTime, String closingTime, String openDays, String address, String phoneNumber, Member member) {
         this.name = name;
@@ -71,15 +74,18 @@ public class Store extends AuditEntity {
         this.openDays = openDays;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.member=member;
+        if (member != null) {
+            this.member = member;
+        }
+        super.addCreatedBy(member.getUsername());
     }
 
-    //== 생성 메서드 ==//
+    /**
+     * 생성 메서드
+     */
     public static Store createStore(String name, String description, String openingTime, String closingTime, String openDays, String address, String phoneNumber, Member member) {
         return new Store(name, description, openingTime, closingTime, openDays, address, phoneNumber, member);
     }
-
-    
 
 
     // 활성화 상태 변경

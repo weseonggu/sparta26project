@@ -35,14 +35,15 @@ public class OrderProduct extends AuditEntity {
     private Product product;
 
     //== 생성 메서드 ==//
-    public static OrderProduct createOrderProduct(Integer price, Integer amount, Product product) {
-        return new OrderProduct(price, amount, product);
+    public static OrderProduct createOrderProduct(Integer price, Integer amount, Product product, String username) {
+        return new OrderProduct(price, amount, product, username);
     }
 
-    public OrderProduct(Integer price, Integer amount, Product product) {
+    public OrderProduct(Integer price, Integer amount, Product product, String username) {
         this.price = price;
         this.amount = amount;
         this.product = product;
+        super.addCreatedBy(username);
 
         product.removeStock(amount);
     }
