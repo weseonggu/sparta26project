@@ -32,35 +32,34 @@ public class Product extends AuditEntity {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-    @Enumerated(EnumType.STRING)
-    private ProductCategory category; // 어떤 종류???
+    private String category; // 상품 상세분류
 
     @Column(name = "image_url")
     private String imageUrl;
 
     @Column(name = "is_available")
-    private String isAvailable; // ERD varchar 어떤 상태????
+    private boolean isAvailable = true; // 주문가능 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
 
-    public Product(String name, String description, Integer price, Integer stockQuantity, ProductCategory category, String imageUrl, String isAvailable, Store store) {
+    public Product(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String username, Store store) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.category = category;
         this.imageUrl = imageUrl;
-        this.isAvailable = isAvailable;
+        super.addCreatedBy(username);
         if (store != null) {
             addStore(store);
         }
     }
 
     //== 생성 메서드 ==//
-    public static Product createProduct(String name, String description, Integer price, Integer stockQuantity, ProductCategory category, String imageUrl, String isAvailable, Store store) {
-        return new Product(name, description, price, stockQuantity, category, imageUrl, isAvailable, store);
+    public static Product createProduct(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String username, Store store) {
+        return new Product(name, description, price, stockQuantity, category, imageUrl, username, store);
     }
 
 
@@ -93,5 +92,9 @@ public class Product extends AuditEntity {
         }
         this.stockQuantity = restStock;
         return restStock;
+    }
+
+    public void changeAvailable() {
+        this.isAvailable = false;
     }
 }
