@@ -24,3 +24,6 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+jwt:
+  time: 30000000
+  key: f5641saf43as51f4a1f56s4fsf231sdf41sfs3ad1gfa1df56gs56dfg11sdg1sdf5g13
