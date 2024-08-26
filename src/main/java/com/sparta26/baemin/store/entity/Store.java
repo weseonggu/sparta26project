@@ -1,5 +1,6 @@
 package com.sparta26.baemin.store.entity;
 
+import com.sparta26.baemin.category.entity.Category;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.deliveryzone.entity.DeliveryZone;
 import com.sparta26.baemin.member.entity.Member;
@@ -61,6 +62,9 @@ public class Store extends AuditEntity {
 
     @OneToMany(mappedBy = "store")
     private List<DeliveryZone> deliveryZones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store")
+    private List<Category> categories = new ArrayList<>();
 
     public Store(String name, String description, String openingTime, String closingTime, String openDays, String address, String phoneNumber, Member member) {
         this.name = name;

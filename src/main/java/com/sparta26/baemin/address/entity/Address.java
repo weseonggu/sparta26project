@@ -3,6 +3,7 @@ package com.sparta26.baemin.address.entity;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
