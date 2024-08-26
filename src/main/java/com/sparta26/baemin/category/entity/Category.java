@@ -15,7 +15,6 @@ import java.util.UUID;
 @Table(name="p_CATEGORIES")
 @Getter
 @NoArgsConstructor
-@SuperBuilder
 public class Category extends AuditEntity {
     @Id
     @GeneratedValue

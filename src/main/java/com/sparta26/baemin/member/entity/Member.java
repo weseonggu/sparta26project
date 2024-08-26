@@ -6,6 +6,7 @@ import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +21,7 @@ import java.util.List;
 public class Member extends AuditEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @Column(name = "member_id")
     private Long id;
 
@@ -43,7 +44,7 @@ public class Member extends AuditEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
-
+    @Builder
     public Member(String email, String password, String username, String nickname, UserRole role, Address... addresses) {
         this.email = email;
         this.password = password;
