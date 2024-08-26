@@ -4,10 +4,8 @@ import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
