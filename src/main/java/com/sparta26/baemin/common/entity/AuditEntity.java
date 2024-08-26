@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -19,9 +20,8 @@ public class AuditEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
-    @CreatedBy
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
@@ -29,7 +29,6 @@ public class AuditEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @LastModifiedBy
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -50,5 +49,9 @@ public class AuditEntity {
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = username;
         this.isPublic = false;
+    }
+
+    public void addCreatedBy(String username) {
+        this.createdBy = username;
     }
 }
