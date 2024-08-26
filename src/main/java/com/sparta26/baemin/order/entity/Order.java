@@ -59,11 +59,11 @@ public class Order extends AuditEntity {
     private Payment payment;
 
     //== 생성 메서드 ==//
-    public static Order createOrder(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store, List<OrderProduct> orderProducts, Payment payment) {
-        return new Order(address, orderType, orderRequest, deliveryRequest, totalPrice, member, store, orderProducts, payment);
+    public static Order createOrder(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store, Payment payment, String username, OrderProduct... orderProducts) {
+        return new Order(address, orderType, orderRequest, deliveryRequest, totalPrice, member, store, payment, username, orderProducts);
     }
 
-    public Order(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store, List<OrderProduct> orderProducts, Payment payment) {
+    public Order(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store,  Payment payment, String username, OrderProduct... orderProducts) {
         this.address = address;
         this.orderType = orderType;
         this.orderRequest = orderRequest;
@@ -81,6 +81,7 @@ public class Order extends AuditEntity {
         if (payment != null) {
             addPayment(payment);
         }
+        super.addCreatedBy(username);
     }
 
     public void addMember(Member member) {
