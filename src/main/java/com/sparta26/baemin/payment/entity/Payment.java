@@ -35,6 +35,13 @@ public class Payment extends AuditEntity {
     @OneToOne(mappedBy = "payment")
     private Order order;
 
+    public Payment(PaymentStatus status, String cardNumber, LocalDateTime payDate, String username) {
+        this.status = status;
+        this.cardNumber = cardNumber;
+        this.payDate = payDate;
+        super.addCreatedBy(username);
+    }
+
     public void addOrder(Order order) {
         this.order = order;
     }
