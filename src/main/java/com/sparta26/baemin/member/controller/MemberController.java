@@ -1,5 +1,6 @@
 package com.sparta26.baemin.member.controller;
 
+import com.sparta26.baemin.category.entity.Category;
 import com.sparta26.baemin.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,5 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+
 
 }
