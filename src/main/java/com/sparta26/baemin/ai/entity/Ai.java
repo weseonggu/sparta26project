@@ -23,4 +23,9 @@ public class Ai extends AuditEntity {
     private String question;
     private String answer;
 
+    public Ai(String question, String answer, String username) {
+        this.question = question;
+        this.answer = answer;
+        super.addCreatedBy(username);
+    }
 }
