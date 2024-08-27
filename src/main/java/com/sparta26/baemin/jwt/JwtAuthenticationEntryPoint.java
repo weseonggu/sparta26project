@@ -20,12 +20,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         this.resolver = resolver;
     }
  
-    
-//    @Override
-//    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-//        // JwtAuthenticationFilter에서 request에 담아서 보내준 예외를 처리
-//        resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
-//    }
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
         // 예외 객체가 null인지 확인

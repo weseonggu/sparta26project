@@ -65,24 +65,19 @@ public class JWTFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 				logger.info("[인중 가 통과]: "+username+" endpoint: "+req.getRequestURI());
 			}catch (SecurityException | MalformedJwtException | SignatureException e) {
-				log.info("333333333333333333333333");
 				logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
 				req.setAttribute("exception", e);
 			} catch (ExpiredJwtException e) {
-				log.info("44444444444444444444");
 				logger.error("Expired JWT token, 만료된 JWT token 입니다.");
 				req.setAttribute("exception", e);
 			} catch (UnsupportedJwtException e) {
-				log.info("5555555555555555555555555");
 				logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
 			} catch (IllegalArgumentException e) {
-				log.info("11111111111111111111");
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
 			}
 			catch (Exception e) {
-				log.info("2222222222222222222222");
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
 			}
