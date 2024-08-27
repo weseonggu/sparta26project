@@ -37,7 +37,7 @@ public class Member extends AuditEntity {
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role; // MEMBER, MANAGER, ADMIN
+    private UserRole role; // ROLE_CUSTOMER, ROLE_OWNER, ROLE_MASTER, ROLE_MANAGER;
 
     @OneToMany @JoinColumn(name = "member_id")
     private List<Address> addresses = new ArrayList<>();
