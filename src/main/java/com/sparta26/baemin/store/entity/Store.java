@@ -76,8 +76,8 @@ public class Store extends AuditEntity {
         this.phoneNumber = phoneNumber;
         if (member != null) {
             this.member = member;
+            super.addCreatedBy(member.getEmail());
         }
-        super.addCreatedBy(member.getUsername());
     }
 
     /**
