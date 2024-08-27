@@ -93,12 +93,29 @@ public class JWTUtil {
 	 * @param token
 	 * @return
 	 */
-	public Claims validateToken(String token) throws Exception
-//			SecurityException, MalformedJwtException, SignatureException, ExpiredJwtException, UnsupportedJwtException,UnsupportedJwtException, IllegalArgumentException
-	{
+//	public Claims validateToken(String token) throws Exception
+////			SecurityException, MalformedJwtException, SignatureException, ExpiredJwtException, UnsupportedJwtException,UnsupportedJwtException, IllegalArgumentException
+//	{
+//
+//		return (Claims) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//
+//	}
 
-		return (Claims) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+	public boolean validateToken(String token){
+		try {
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+			return true;
 
+		} catch (SecurityException | MalformedJwtException | io.jsonwebtoken.security.SignatureException e) {
+			logger.error("Invalid JWT signature, 유효하지 않은 JWT 서명 입니다.");
+		} catch (ExpiredJwtException e) {
+			logger.error("Expired JWT token, 만료된 JWT 토큰 입니다.");
+		} catch (UnsupportedJwtException e) {
+			logger.error("Unsupported JWT token, 지원되지 않은 JWT 토큰 입니다.");
+		} catch (IllegalArgumentException e){
+			logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+		}
+		return false;
 	}
 
 
