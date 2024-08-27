@@ -41,10 +41,10 @@ public class Store extends AuditEntity {
     @Column(name = "open_days")
     private String openDays;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String address;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
     @Column(name = "is_active")
@@ -76,8 +76,8 @@ public class Store extends AuditEntity {
         this.phoneNumber = phoneNumber;
         if (member != null) {
             this.member = member;
+            super.addCreatedBy(member.getEmail());
         }
-        super.addCreatedBy(member.getUsername());
     }
 
     /**

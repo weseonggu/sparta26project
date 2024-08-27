@@ -3,10 +3,9 @@ package com.sparta26.baemin.category.entity;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
@@ -14,8 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name="p_CATEGORIES")
 @Getter
-@NoArgsConstructor
-@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends AuditEntity {
     @Id
     @GeneratedValue
