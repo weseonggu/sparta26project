@@ -2,6 +2,7 @@ package com.sparta26.baemin.member.service;
 
 import com.sparta26.baemin.dto.member.RequestLogInDto;
 import com.sparta26.baemin.dto.member.RequestSignUpDto;
+import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
 import com.sparta26.baemin.jwt.JWTUtil;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.entity.UserRole;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +50,14 @@ public class MemberService {
 
     public String attemptLogIn(RequestLogInDto member) {
         Member db_member = memberRepository.findByEmail(member.getEmail())
-                .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + member.getEmail()));
+                .orElseThrow(() -> new LoginFailException("Member not found with email: " + member.getEmail()));
         // 비번 비교 로직
-        
-        return jwtUtil.createToken(db_member.getId(),db_member.getEmail(),db_member.getRole());
+        String token = null;
+        if(passwordEncoder.matches(member.getPassword(), db_member.getPassword())){
+            token = jwtUtil.createToken(db_member.getId(),db_member.getEmail(),db_member.getRole());
+        }else{
+            throw new LoginFailException("이메일이나 비밀번호가 틀렸습니다.");
+        }
+        return token;
     }
 }

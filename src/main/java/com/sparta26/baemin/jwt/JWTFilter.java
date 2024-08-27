@@ -41,14 +41,14 @@ public class JWTFilter extends OncePerRequestFilter {
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-		String tokenValue = req.getHeader("Authorization");
 
-		if (StringUtils.hasText(tokenValue)) {
-			// JWT 토큰 substring
-			tokenValue = jwtUtil.substringToken(tokenValue);
-			log.info(tokenValue);
+
 			try{
-
+				String tokenValue = req.getHeader("Authorization");
+				if(tokenValue == null || !tokenValue.startsWith("Bearer ") || tokenValue.isEmpty()){
+					throw new SecurityException("토큰이 없습니다.");
+				}
+				tokenValue = jwtUtil.substringToken(tokenValue);
 				jwtUtil.validateToken(tokenValue);
 				Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
 				Long id = ((Integer) claims.get("id")).longValue();
@@ -84,7 +84,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			finally {
 				filterChain.doFilter(req, res);
 			}
-		}
+
 
 	}
 

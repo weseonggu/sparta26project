@@ -2,12 +2,19 @@ package com.sparta26.baemin.exception;
 
 import com.sparta26.baemin.common.util.CurrentTime;
 import com.sparta26.baemin.dto.response.FailMessage;
+import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +29,7 @@ import java.util.List;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final CurrentTime rTime;
@@ -51,10 +59,71 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
-
+    /**
+     * 이미 중복이 불가한 데이터를 저장 할 때 웅답
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @ExceptionHandler(DuplicateKeyException.class)
-    public final ResponseEntity<FailMessage> handeleUsernameNotFoundException(Exception ex, WebRequest request) throws Exception{
+    public final ResponseEntity<FailMessage> handeleUsernameDuplicateKeyException(Exception ex, WebRequest request) throws Exception{
         FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
         return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 로그인 실패 응답
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(LoginFailException.class)
+    public final ResponseEntity<FailMessage> handeleLoginFailException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * 인가 실패:  Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler({SecurityException.class, MalformedJwtException.class, SignatureException.class})
+    public final ResponseEntity<FailMessage> handeleAuthenticationFailedException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * 만료된 토큰
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    public final ResponseEntity<FailMessage> handeleExpiredJwtException(Exception ex, WebRequest request) throws Exception{
+        List<String> list = new ArrayList<>();
+        list.add(ex.getMessage());
+        list.add("54826");// 토큰이 만료 되었다는 의미
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), list);
+        return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public final ResponseEntity<FailMessage> handeleUnsupportedJwtException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
     }
 }

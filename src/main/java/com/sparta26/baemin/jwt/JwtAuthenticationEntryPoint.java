@@ -31,7 +31,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         // 예외 처리
         resolver.resolveException(request, response, null, exception);
-        log.error("JwtAuthenticationEntryPoint triggered. Exception: ", exception);
     }
 }
 
