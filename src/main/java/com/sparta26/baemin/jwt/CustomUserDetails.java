@@ -1,6 +1,5 @@
 package com.sparta26.baemin.jwt;
 
-import com.sparta26.baemin.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
