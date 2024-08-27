@@ -8,7 +8,9 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseAiDto {
+public class ResponseAiAnswerDto {
 
     private String answer;
+
+
 }
