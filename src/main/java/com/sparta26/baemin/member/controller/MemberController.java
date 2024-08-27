@@ -42,12 +42,13 @@ public class MemberController {
         return new ResponseEntity<String>("로그인 성공했습니다.", headers, HttpStatus.OK);
     }
 
-    @GetMapping("/v1/test")
-    public String test() {
-        return "안녕하세요";
-    }
-    @GetMapping("/v1/member/{email}")
-    @PreAuthorize("isAuthenticated() && principal.getEmail() == #email")
+    /**
+     * 사용자 정보 조회 사용자일 경우 본인만 가능하고 매니저일경우 타인의 정보 조회 가능
+     * @param email
+     * @return
+     */
+    @GetMapping("/v1/members/{email}")
+    @PreAuthorize("(isAuthenticated() && principal.getEmail() == #email) || principal.getEmail() == ROLE_MANAGER")
     public ResponseEntity<?> getMember(@PathVariable("email") String email) {
         ResponseMemberInfoDto memberInfo = memberCacheService.getMemberInfo(email);
         // 수동 필터
