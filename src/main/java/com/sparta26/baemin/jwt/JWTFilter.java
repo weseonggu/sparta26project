@@ -41,40 +41,30 @@ public class JWTFilter extends OncePerRequestFilter {
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-		String tokenValue = req.getHeader("Authorization");
 
-		if (StringUtils.hasText(tokenValue)) {
-			// JWT 토큰 substring
-			tokenValue = jwtUtil.substringToken(tokenValue);
-			log.info(tokenValue);
+
 			try{
-				log.info("2222222222222222222222");
-//				Claims claims = jwtUtil.validateToken(tokenValue);
-				if (!jwtUtil.validateToken(tokenValue)) {
-					log.error("Token Error");
-					return;
+				String tokenValue = req.getHeader("Authorization");
+				if(tokenValue == null || !tokenValue.startsWith("Bearer ") || tokenValue.isEmpty()){
+					throw new SecurityException("토큰이 없습니다.");
 				}
-
-				log.info("11111111111111111111");
-
-				Claims claimsBody = jwtUtil.getUserInfoFromToken(tokenValue);
-				Long id = ((Integer) claimsBody.get("id")).longValue();
-				String username = String.valueOf(claimsBody.get("email"));
-				String role = (String) claimsBody.get("role");
+				tokenValue = jwtUtil.substringToken(tokenValue);
+				jwtUtil.validateToken(tokenValue);
+				Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
+				Long id = ((Integer) claims.get("id")).longValue();
+				String username = String.valueOf(claims.get("email"));
+				String role = (String) claims.get("role");
 
 				ForContext context = new ForContext(id, username, role);
 
 				CustomUserDetails customUserDetails = new CustomUserDetails(context);
-				log.info("customUserDetails1 =  " + customUserDetails);
 				Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
 						customUserDetails.getAuthorities());
 
 
 				SecurityContextHolder.getContext().setAuthentication(authToken);
-				log.info("customUserDetails2 =  " + customUserDetails);
 				logger.info("[인중 가 통과]: "+username+" endpoint: "+req.getRequestURI());
 			}catch (SecurityException | MalformedJwtException | SignatureException e) {
-
 				logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
 				req.setAttribute("exception", e);
 			} catch (ExpiredJwtException e) {
@@ -86,16 +76,16 @@ public class JWTFilter extends OncePerRequestFilter {
 			} catch (IllegalArgumentException e) {
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
 			}
 			finally {
 				filterChain.doFilter(req, res);
 			}
-		}
 
-		filterChain.doFilter(req, res);
+
 	}
 
 	@Override
