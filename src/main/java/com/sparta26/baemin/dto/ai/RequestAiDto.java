@@ -1,14 +1,11 @@
 package com.sparta26.baemin.dto.ai;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class RequestAiDto {
 
     @NotBlank(message = "질문 사항은 반드시 입력하셔야 합니다.")
