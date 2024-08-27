@@ -6,9 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta26.baemin.ai.entity.Ai;
 import com.sparta26.baemin.ai.repository.AiRepository;
 import com.sparta26.baemin.dto.ai.RequestAiDto;
-import com.sparta26.baemin.dto.ai.ResponseAiDto;
+import com.sparta26.baemin.dto.ai.ResponseAiAnswerDto;
+import com.sparta26.baemin.dto.ai.ResponseAiPageDto;
+import com.sparta26.baemin.exception.exceptionsdefined.AiNotFoundException;
+import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +32,11 @@ public class AiService {
     private final AiRepository aiRepository;
     private final RestTemplate restTemplate;
 
+    /**
+     * Ai 질문 메서드
+     */
     @Transactional
-    public ResponseAiDto questions(RequestAiDto requestAiDto) throws JsonProcessingException {
+    public ResponseAiAnswerDto questions(RequestAiDto requestAiDto, String email) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://generativelanguage.googleapis.com")
                 .path("/v1beta/models/gemini-1.5-flash-latest:generateContent")
@@ -71,10 +79,49 @@ public class AiService {
 
         Ai ai = new Ai(requestAiDto.getQuestion() + " 답변은 50자 이내로 해주세요",
                 answer,
-                "유저이름");
+                email);
 
         Ai savedAi = aiRepository.save(ai);
 
-        return new ResponseAiDto(savedAi.getAnswer());
+        return new ResponseAiAnswerDto(savedAi.getAnswer());
+    }
+
+    /**
+     * Ai 질답 리스트 검색
+     */
+    public Page<ResponseAiPageDto> findAll(Pageable pageable) {
+
+        Page<Ai> aiPage = aiRepository.findAllByIsPublic(pageable);
+
+        return aiPage.map(ResponseAiPageDto::new);
+    }
+
+    /**
+     * Ai 질답 삭제
+     */
+    @Transactional
+    public void delete(String aiId, String email) {
+
+        if (!isValidUUID(aiId)) {
+            log.error("Invalid UUID = {}",aiId);
+            throw new UuidFormatException("Invalid UUID format");
+        }
+
+        Ai findAi = aiRepository.findById(UUID.fromString(aiId)).orElseThrow(() -> new AiNotFoundException("ai not found"));
+        findAi.delete(email);
+    }
+
+    /**
+     * UUID 형식 검증 메서드
+     * @param aiId
+     * @return
+     */
+    public boolean isValidUUID(String aiId) {
+        try {
+            UUID.fromString(aiId);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
