@@ -51,4 +51,5 @@ public class AuditEntity {
     public void addCreatedBy(String email) {
         this.createdBy = email;
     }
+    public void addUpdatedBy(String email) {this.updatedBy = email;}
 }
