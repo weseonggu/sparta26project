@@ -129,6 +129,19 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * IllegalArgumentException 예외 처리
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public final ResponseEntity<FailMessage> handeleIllegalArgumentException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+
     private String getStackTraceAsString(Throwable throwable) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);

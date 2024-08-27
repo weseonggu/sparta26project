@@ -26,13 +26,11 @@ public class MemberService {
 
     @Transactional
     public Member createMember(RequestSignUpDto member){
-        UserRole role = UserRole.valueOf(member.getRoleCode());
+        UserRole role = UserRole.fromString(member.getRoleCode());
         Member user;
-
         if(memberRepository.existsByEmail(member.getEmail())){
             throw new DuplicateKeyException("이미 가입한 이메일 입니다.");
         }
-
         user = Member.builder()
                 .email(member.getEmail())
                 .password(passwordEncoder.encode(member.getPassword()))
@@ -41,7 +39,25 @@ public class MemberService {
                 .role(role)
                 .build();
         return memberRepository.save(user);
-
+//            if (role == null){
+//                 user = Member.builder()
+//                        .email(member.getEmail())
+//                        .password(passwordEncoder.encode(member.getPassword()))
+//                        .username(member.getUsername())
+//                        .nickname(member.getNickname())
+//                        .role(UserRole.ROLE_CUSTOMER)
+//                        .build();
+//                return memberRepository.save(user);
+//            }else {
+//                user = Member.builder()
+//                        .email(member.getEmail())
+//                        .password(passwordEncoder.encode(member.getPassword()))
+//                        .username(member.getUsername())
+//                        .nickname(member.getNickname())
+//                        .role(role)
+//                        .build();
+//                return memberRepository.save(user);
+//            }
     }
 
     public String attemptLogIn(RequestLogInDto member) {
