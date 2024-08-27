@@ -3,7 +3,6 @@ package com.sparta26.baemin.member.entity;
 import com.sparta26.baemin.address.entity.Address;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.order.entity.Order;
-import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,7 +53,7 @@ public class Member extends AuditEntity {
         if (addresses != null) {
             addAddress(addresses);
         }
-        super.addCreatedBy(username);
+        super.addCreatedBy(email);
     }
 
     /**
