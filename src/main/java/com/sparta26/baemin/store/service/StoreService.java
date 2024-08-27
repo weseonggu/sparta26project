@@ -60,6 +60,7 @@ public class StoreService {
     public ResponseStoreDto findOneStore(String storeId) {
 
         if (!isValidUUID(storeId)) {
+            log.error("Invalid UUID = {}",storeId);
             throw new UuidFormatException("Invalid UUID format");
         }
 
