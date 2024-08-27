@@ -49,20 +49,29 @@ public class JWTFilter extends OncePerRequestFilter {
 			log.info(tokenValue);
 			try{
 				log.info("2222222222222222222222");
-				Claims claims = jwtUtil.validateToken(tokenValue);
+//				Claims claims = jwtUtil.validateToken(tokenValue);
+				if (!jwtUtil.validateToken(tokenValue)) {
+					log.error("Token Error");
+					return;
+				}
+
 				log.info("11111111111111111111");
-				Long id = ((Integer) claims.get("id")).longValue();
-				String username = String.valueOf(claims.get("email"));
-				String role = (String) claims.get("role");
+
+				Claims claimsBody = jwtUtil.getUserInfoFromToken(tokenValue);
+				Long id = ((Integer) claimsBody.get("id")).longValue();
+				String username = String.valueOf(claimsBody.get("email"));
+				String role = (String) claimsBody.get("role");
 
 				ForContext context = new ForContext(id, username, role);
 
 				CustomUserDetails customUserDetails = new CustomUserDetails(context);
+				log.info("customUserDetails1 =  " + customUserDetails);
 				Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
 						customUserDetails.getAuthorities());
 
 
 				SecurityContextHolder.getContext().setAuthentication(authToken);
+				log.info("customUserDetails2 =  " + customUserDetails);
 				logger.info("[인중 가 통과]: "+username+" endpoint: "+req.getRequestURI());
 			}catch (SecurityException | MalformedJwtException | SignatureException e) {
 
@@ -77,8 +86,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			} catch (IllegalArgumentException e) {
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
 				req.setAttribute("exception", e);
 			}
