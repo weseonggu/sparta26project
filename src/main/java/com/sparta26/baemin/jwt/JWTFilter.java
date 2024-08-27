@@ -48,9 +48,9 @@ public class JWTFilter extends OncePerRequestFilter {
 			tokenValue = jwtUtil.substringToken(tokenValue);
 			log.info(tokenValue);
 			try{
-
-				jwtUtil.validateToken(tokenValue);
-				Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
+				log.info("2222222222222222222222");
+				Claims claims = jwtUtil.validateToken(tokenValue);
+				log.info("11111111111111111111");
 				Long id = ((Integer) claims.get("id")).longValue();
 				String username = String.valueOf(claims.get("email"));
 				String role = (String) claims.get("role");
@@ -65,6 +65,7 @@ public class JWTFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 				logger.info("[인중 가 통과]: "+username+" endpoint: "+req.getRequestURI());
 			}catch (SecurityException | MalformedJwtException | SignatureException e) {
+
 				logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
 				req.setAttribute("exception", e);
 			} catch (ExpiredJwtException e) {
@@ -86,6 +87,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			}
 		}
 
+		filterChain.doFilter(req, res);
 	}
 
 	@Override

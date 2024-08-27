@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public enum UserRole {
 //  고객     가게주인   관리자
-    ROLE_CUSTOMER, ROLE_OWNER, ROLE_MASTER, ROLE_MANAGER
+    CUSTOMER_ROLE, OWNER_ROLE, MASTER_ROLE, USER_ROLE
 
 }

@@ -30,7 +30,7 @@ public class MemberService {
     public Member createMember(RequestSignUpDto member){
             UserRole role = null;
             if(member.getRoleCode().equals("sparta26")){
-                role= UserRole.ROLE_CUSTOMER;
+                role= UserRole.USER_ROLE;
             }
             if(memberRepository.existsByEmail(member.getEmail())){
                 throw new DuplicateKeyException("이미 가입한 이메일 입니다.");
@@ -49,8 +49,7 @@ public class MemberService {
     public String attemptLogIn(RequestLogInDto member) {
         Member db_member = memberRepository.findByEmail(member.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + member.getEmail()));
-        // 비번 비교 로직
-        
+
         return jwtUtil.createToken(db_member.getId(),db_member.getEmail(),db_member.getRole());
     }
 }
