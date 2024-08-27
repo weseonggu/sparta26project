@@ -8,7 +8,6 @@ import com.sparta26.baemin.member.entity.UserRole;
 import com.sparta26.baemin.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class MemberService {
     public Member createMember(RequestSignUpDto member){
             UserRole role = null;
             if(member.getRoleCode().equals("sparta26")){
-                role= UserRole.USER_ROLE;
+                role= UserRole.ROLE_CUSTOMER;
             }
             if(memberRepository.existsByEmail(member.getEmail())){
                 throw new DuplicateKeyException("이미 가입한 이메일 입니다.");
