@@ -35,13 +35,13 @@ public class RequestSignUpDto {
             message = "최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자 형식으로 만들어 주세요.")
     private String password;
 
-    @NotBlank(message = "일반 사용자는 작성하면 안됩니다.")
-    private UserRole roleCode;
+    private String roleCode;
 
     public RequestSignUpDto(String username, String nickname, String email, String password, String roleCode) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
+        this.roleCode = roleCode;
     }
 }
