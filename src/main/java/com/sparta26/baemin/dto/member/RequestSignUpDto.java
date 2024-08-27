@@ -1,6 +1,5 @@
 package com.sparta26.baemin.dto.member;
 
-import com.sparta26.baemin.member.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +35,7 @@ public class RequestSignUpDto {
     private String password;
 
     @NotBlank(message = "일반 사용자는 작성하면 안됩니다.")
-    private UserRole roleCode;
+    private String roleCode;
 
     public RequestSignUpDto(String username, String nickname, String email, String password, String roleCode) {
         this.username = username;
