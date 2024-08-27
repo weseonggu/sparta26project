@@ -1,6 +1,7 @@
 package com.sparta26.baemin.security;
 
 import com.sparta26.baemin.jwt.JWTFilter;
+import com.sparta26.baemin.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
-    private final AuthenticationEntryPoint entryPoint;
+    private final JwtAuthenticationEntryPoint entryPoint;
     private final JWTFilter jwtFilter;
 
     @Bean
@@ -52,7 +53,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers( "/v1/signUp","/v1/logIn").permitAll()
-                .requestMatchers("/v1/test").hasRole("USER")
+                .requestMatchers("/v1/test").hasRole("CUSTOMER")
                 .anyRequest().authenticated());
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
 

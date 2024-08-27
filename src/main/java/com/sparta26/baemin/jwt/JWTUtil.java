@@ -93,11 +93,10 @@ public class JWTUtil {
 	 * @param token
 	 * @return
 	 */
-	public Claims validateToken(String token) throws Exception
-//			SecurityException, MalformedJwtException, SignatureException, ExpiredJwtException, UnsupportedJwtException,UnsupportedJwtException, IllegalArgumentException
+	public void validateToken(String token) throws SecurityException, MalformedJwtException, SignatureException, ExpiredJwtException,UnsupportedJwtException, IllegalArgumentException
 	{
 
-		return (Claims) Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+		Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 
 	}
 
