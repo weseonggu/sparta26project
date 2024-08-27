@@ -3,12 +3,8 @@ package com.sparta26.baemin.common.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -44,15 +40,15 @@ public class AuditEntity {
 
     /**
      * 데이터 삭제 요청시 정보공개 여부를 False로 변경
-     * @param username
+     * @param email
      */
-    public void delete(String username) {
+    public void delete(String email) {
         this.deletedAt = LocalDateTime.now();
-        this.deletedBy = username;
+        this.deletedBy = email;
         this.isPublic = false;
     }
 
-    public void addCreatedBy(String username) {
-        this.createdBy = username;
+    public void addCreatedBy(String email) {
+        this.createdBy = email;
     }
 }

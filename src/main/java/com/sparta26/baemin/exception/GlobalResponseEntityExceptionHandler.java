@@ -1,12 +1,14 @@
 package com.sparta26.baemin.exception;
 
 import com.sparta26.baemin.common.util.CurrentTime;
+import com.sparta26.baemin.dto.error.ErrorResponse;
 import com.sparta26.baemin.dto.response.FailMessage;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import com.sparta26.baemin.exception.exceptionsdefined.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,5 +129,54 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     public final ResponseEntity<FailMessage> handeleUnsupportedJwtException(Exception ex, WebRequest request) throws Exception{
         FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
         return new ResponseEntity<FailMessage>(message,HttpStatus.UNAUTHORIZED);
+    }
+
+    private String getStackTraceAsString(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        return stringWriter.toString();
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(MemberNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(MemberStoreLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(MemberStoreLimitExceededException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(StoreNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(StoreNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(UuidFormatException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(UuidFormatException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(ForbiddenAccessException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(ForbiddenAccessException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Unauthorized user", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(AiNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(AiNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

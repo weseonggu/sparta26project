@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,15 +36,12 @@ public class RequestSignUpDto {
     private String password;
 
     @NotBlank(message = "일반 사용자는 작성하면 안됩니다.")
-    private String roleCode = "sparta26";
+    private UserRole roleCode;
 
     public RequestSignUpDto(String username, String nickname, String email, String password, String roleCode) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        if(roleCode.isEmpty()){
-            this.roleCode = "sparta26";
-        }
     }
 }
