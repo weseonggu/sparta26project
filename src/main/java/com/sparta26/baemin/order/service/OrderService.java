@@ -1,9 +1,6 @@
 package com.sparta26.baemin.order.service;
 
-import com.sparta26.baemin.dto.order.RequestOrderCreateDto;
-import com.sparta26.baemin.dto.order.RequestOrderUpdateDto;
-import com.sparta26.baemin.dto.order.ResponseOrderCreateDto;
-import com.sparta26.baemin.dto.order.ResponseOrderDto;
+import com.sparta26.baemin.dto.order.*;
 import com.sparta26.baemin.dto.orderproduct.RequestOrderProductDto;
 import com.sparta26.baemin.dto.orderproduct.ResponseOrderProductDto;
 import com.sparta26.baemin.exception.exceptionsdefined.BadRequestException;
@@ -113,21 +110,18 @@ public class OrderService {
 
     @Transactional
     public ResponseOrderDto updateOrder(
-            RequestOrderUpdateDto request, String orderId, Long userId, String email, String role
+            RequestOrderUpdateDto request,
+            String orderId, Long userId, String email, String role
     ) {
 
-        Order order;
-        if (UserRole.ROLE_CUSTOMER.name().equals(role) && request.isCancelRequest()) {
-            order = getOrderByIdAndMemberId(orderId, userId);
-            if (LocalDateTime.now().isAfter(order.getCreatedAt().plusSeconds(300))) {
-                throw new BadRequestException("Customer can only cancel your order within 5 minutes");
-            }
-            order.updateStatus(OrderStatus.CANCEL, email);
-        } else if (!UserRole.ROLE_CUSTOMER.name().equals(role) && isValidUserRole(role)) {
-            order = getOrderById(orderId);
-            order.updateStatus(OrderStatus.valueOf(request.getNewStatus()), email);
-        } else
-            throw new UnauthorizedException("Required permissions to access this resource");
+        Order order = switch (UserRole.fromString(role)) {
+            case ROLE_CUSTOMER ->
+                    updateOrderByCustomer(request, orderId, userId, email);
+            case ROLE_OWNER ->
+                    updateOrderStatus(request, orderId, email);
+            case ROLE_MANAGER, ROLE_MASTER ->
+                    updateOrderByMaster(request, orderId, email);
+        };
 
         return entityToResponseOrderDto(order);
     }
@@ -150,13 +144,52 @@ public class OrderService {
         ).orElseThrow(() -> new NotFoundException("Order not found."));
     }
 
-    private boolean isValidUserRole(String role) {
-        try {
-            UserRole.valueOf(role.toUpperCase());
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+    private Order updateOrderStatus(
+            RequestOrderUpdateDto request, String orderId, String email
+    ) {
+
+        Order order = getOrderById(orderId);
+        order.updateStatus(OrderStatus.valueOf(request.getNewStatus()), email);
+        return order;
+    }
+
+    private Order updateOrderByCustomer(
+            RequestOrderUpdateDto request, String orderId, Long userId, String email
+    ) {
+
+        Order order = getOrderByIdAndMemberId(orderId, userId);
+        if (request.isCancelRequest()) {
+            if (LocalDateTime.now().isAfter(order.getCreatedAt().plusSeconds(300))) {
+                throw new BadRequestException(
+                        "Customer can only cancel your order within 5 minutes");
+            }
+            order.updateStatus(OrderStatus.CANCEL, email);
+            return order;
         }
+
+        order.updateOrderByCustomer(
+                request.getAddress(),
+                request.getOrderRequest(),
+                request.getDeliveryRequest(),
+                email
+        );
+
+        return order;
+    }
+
+    private Order updateOrderByMaster(
+            RequestOrderUpdateDto request, String orderId, String email
+    ) {
+
+        Order order = getOrderById(orderId);
+        order.updateOrderByMaster(
+                request.getAddress(),
+                request.getOrderRequest(),
+                request.getDeliveryRequest(),
+                email,
+                OrderStatus.valueOf(request.getNewStatus())
+        );
+        return order;
     }
 
     private ResponseOrderDto entityToResponseOrderDto(Order order) {

@@ -104,8 +104,8 @@ public class Order extends AuditEntity {
         this.payment = payment;
         payment.addOrder(this);
     }
-
     // 전체 주문 가격 조회
+
     public int getTotalPrice() {
         return orderProducts.stream().mapToInt(OrderProduct::getTotalPrice).sum();
     }
@@ -113,5 +113,21 @@ public class Order extends AuditEntity {
     public void updateStatus(OrderStatus status, String email) {
         this.status = status;
         this.updateBy(email);
+    }
+
+    private void updateCommonFields(String address, String orderRequest, String deliveryRequest, String email) {
+        this.address = address;
+        this.orderRequest = orderRequest;
+        this.deliveryRequest = deliveryRequest;
+        this.updateBy(email);
+    }
+
+    public void updateOrderByCustomer(String address, String orderRequest, String deliveryRequest, String email) {
+        updateCommonFields(address, orderRequest, deliveryRequest, email);
+    }
+
+    public void updateOrderByMaster(String address, String orderRequest, String deliveryRequest, String email, OrderStatus status) {
+        updateCommonFields(address, orderRequest, deliveryRequest, email);
+        this.status = status;
     }
 }
