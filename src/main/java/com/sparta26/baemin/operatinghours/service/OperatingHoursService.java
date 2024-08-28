@@ -28,7 +28,7 @@ public class OperatingHoursService {
 
 
     /**
-     * 가게 운영시간 등록
+     * 가게 운영시간 등록, 가게주인만 생성가능
      * @param requestOperatingHoursDto
      * @param storeId
      * @param memberId
@@ -74,35 +74,50 @@ public class OperatingHoursService {
      * @return
      */
     @Transactional
-    public ResponseOperatingDto updateOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, String operatingId, Long memberId, String email) {
+    public ResponseOperatingDto updateOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, String operatingId, Long memberId, String email, String role) {
         if (!isValidUUID(operatingId)) {
             log.error("UUID = {}", operatingId);
             throw new UuidFormatException("UUID 형식이 틀렸습니다.");
         }
-        OperatingHours findOperating = operatingHoursRepository.findByIdAndCreatedBy(UUID.fromString(operatingId), email)
-                .orElseThrow(() -> new IllegalArgumentException("not found OperatingHours or Invalid user"));
 
-        OperatingHours updateOperating = findOperating.update(requestOperatingHoursDto, email);
+        OperatingHours updateOperating;
+        if (role.equals("ROLE_OWNER")) {
+            OperatingHours findOperating = operatingHoursRepository.findByIdAndCreatedBy(UUID.fromString(operatingId), email)
+                    .orElseThrow(() -> new IllegalArgumentException("not found OperatingHours or Invalid user"));
+
+            updateOperating = findOperating.update(requestOperatingHoursDto, email);
+
+        } else {
+
+            OperatingHours findOperating = operatingHoursRepository.findById(UUID.fromString(operatingId)).orElseThrow(() ->
+                    new IllegalArgumentException("not found OperatingHours"));
+            updateOperating = findOperating.update(requestOperatingHoursDto, email);
+        }
+
         return ResponseOperatingDto.toDto(updateOperating);
     }
 
     /**
      * 가게 운영시간 삭제
      * @param operatingId
-     * @param memberId
      * @param email
      */
     @Transactional
-    public void deleteOperatingHours(String operatingId, Long memberId, String email) {
+    public void deleteOperatingHours(String operatingId, String email, String role) {
         if (!isValidUUID(operatingId)) {
             log.error("UUID = {}", operatingId);
             throw new UuidFormatException("UUID 형식이 틀렸습니다.");
         }
 
-        OperatingHours findOperating = operatingHoursRepository.findByIdAndCreatedBy(UUID.fromString(operatingId), email)
-                .orElseThrow(() -> new IllegalArgumentException("not found OperatingHours or Invalid user"));
-
-        findOperating.delete(email);
+        if (role.equals("ROLE_OWNER")) {
+            OperatingHours findOperating = operatingHoursRepository.findByIdAndCreatedBy(UUID.fromString(operatingId), email)
+                    .orElseThrow(() -> new IllegalArgumentException("not found OperatingHours or Invalid user"));
+            findOperating.delete(email);
+        } else {
+            OperatingHours findOperating = operatingHoursRepository.findById(UUID.fromString(operatingId)).orElseThrow(() ->
+                    new IllegalArgumentException("not found OperatingHours"));
+            findOperating.delete(email);
+        }
     }
 
     /**
