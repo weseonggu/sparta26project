@@ -53,6 +53,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers( "/v1/signUp","/v1/logIn").permitAll()
                 .requestMatchers("/v1/test").hasRole("CUSTOMER")
+                .requestMatchers("/v1/products/{storeId}").hasRole("OWNER")
                 .anyRequest().authenticated());
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
 
