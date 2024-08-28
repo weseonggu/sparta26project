@@ -48,6 +48,10 @@ public class AuditEntity {
         this.isPublic = false;
     }
 
+    protected void updateBy(String email) {
+        this.updatedBy = email;
+    }
+
     public void addCreatedBy(String email) {
         this.createdBy = email;
     }
