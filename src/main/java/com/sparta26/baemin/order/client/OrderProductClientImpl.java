@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductClientImpl implements ProductClient{
+public class OrderProductClientImpl implements OrderProductClient {
 
     Product product;
 
