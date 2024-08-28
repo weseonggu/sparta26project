@@ -51,6 +51,10 @@ public class OrderService {
 
         if (UserRole.ROLE_CUSTOMER.equals(member.getRole()) &&
                 OrderType.OFFLINE.name().equals(request.getOrderType())) {
+            log.error(
+                    "고객이 오프라인 주문을 시도 { userId : " + userId +
+                            ", requestOrderType : " + request.getOrderType() + " }"
+            );
             throw new UnauthorizedException("Customer can only create online orders.");
         }
 
@@ -160,6 +164,10 @@ public class OrderService {
         Order order = getOrderByIdAndMemberId(orderId, userId);
         if (request.isCancelRequest()) {
             if (LocalDateTime.now().isAfter(order.getCreatedAt().plusSeconds(300))) {
+                log.error(
+                        "고객이 주문생성 5분이 지난 후 수정 요청 { userId : " + userId +
+                                ", orderId : " + orderId + " }"
+                );
                 throw new BadRequestException(
                         "Customer can only cancel your order within 5 minutes");
             }
@@ -231,13 +239,16 @@ public class OrderService {
             Product product =
                     productClient.getProductById(orderProductDto.getProductId());
 
-            orderProducts.add(new OrderProduct(
+            orderProducts.add(OrderProduct.createOrderProduct(
                     orderProductDto.getPrice(),
                     orderProductDto.getAmount(),
                     product,
                     email
             ));
         }
+
+        //TODO orderProduct 에 저장하고 DTO 로 변환하는 로직으로 수정
+
         return orderProducts;
     }
 }
