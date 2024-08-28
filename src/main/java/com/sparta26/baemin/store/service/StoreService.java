@@ -34,7 +34,7 @@ public class StoreService {
     private final OperatingHoursClient operatingHoursClient;
     private final MemberRepository memberRepository;
     /**
-     * 가게 생성
+     * 가게 생성, 가게주인만 생성가능
      */
     @Transactional
     public ResponseStoreDto createStore(RequestStoreDto requestStoreDto, Long memberId) {
@@ -44,8 +44,6 @@ public class StoreService {
         }
 
         Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("not found member"));
-
-
         Store findStore = storeRepository.findByAddressOrPhoneNumberAndMemberIdNot(requestStoreDto.getAddress(), requestStoreDto.getPhone_number(), memberId).orElse(null);
 
         log.info("Store = {}, memberId = {}", findStore, memberId);
@@ -106,7 +104,7 @@ public class StoreService {
      * @return
      */
     @Transactional
-    public ResponseStoreDto updateStore(RequestStoreDto requestStoreDto, String storeId, Long memberId, String email) {
+    public ResponseStoreDto updateStore(RequestStoreDto requestStoreDto, String storeId, Long memberId, String email, String role) {
 
         Store validStore = storeRepository.findByAddressOrPhoneNumberAndMemberIdNot(requestStoreDto.getAddress(), requestStoreDto.getPhone_number(), memberId).orElse(null);
 
@@ -126,10 +124,17 @@ public class StoreService {
             throw new UuidFormatException("Invalid UUID format");
         }
 
-        Store store = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
-                new StoreNotFoundException("not found store"));
+        Store updateStore;
 
-        Store updateStore = store.update(requestStoreDto, email);
+        if (role.equals("ROLE_OWNER")) {
+            Store store = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
+                    new StoreNotFoundException("등록된 상점이 없거나 본인의 가게만 수정이 가능합니다."));
+            updateStore = store.update(requestStoreDto, email);
+        } else {
+            Store store = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() ->
+                    new StoreNotFoundException("not found store"));
+            updateStore = store.update(requestStoreDto, email);
+        }
 
         return ResponseStoreDto.toDto(updateStore);
     }
@@ -170,27 +175,66 @@ public class StoreService {
         return active;
     }
 
+    /**
+     * 가게 삭제
+     * @param storeId
+     * @param email
+     */
     @Transactional
-    public void deleteStore(String storeId, String email) {
+    public void deleteStore(String storeId, String email, String role, Long memberId) {
         if (!isValidUUID(storeId)) {
             log.error("Invalid UUID = {}",storeId);
             throw new UuidFormatException("Invalid UUID format");
         }
 
-        Store findStore = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() -> new StoreNotFoundException("not found store"));
-        List<OperatingHours> operatingHours = operatingHoursClient.findByStoreId(UUID.fromString(storeId));
+        if (role.equals("ROLE_OWNER")) {
+            Store findStore = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() -> new StoreNotFoundException("not found store"));
+            List<OperatingHours> operatingHours = operatingHoursClient.findByStoreId(UUID.fromString(storeId));
+            if (!operatingHours.isEmpty()) {
+                for (OperatingHours operatingHour : operatingHours) {
+                    operatingHour.delete(email);
+                }
+            }
+            if (!findStore.isPublic()) {
+                throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
+            } else {
+                findStore.delete(email);
+            }
+        } else {
+            Store findStore = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() -> new StoreNotFoundException("not found store"));
+            List<OperatingHours> operatingHours = operatingHoursClient.findByStoreId(UUID.fromString(storeId));
 
-        if (!operatingHours.isEmpty()) {
-            for (OperatingHours operatingHour : operatingHours) {
-                operatingHour.delete(email);
+            if (!operatingHours.isEmpty()) {
+                for (OperatingHours operatingHour : operatingHours) {
+                    operatingHour.delete(email);
+                }
+            }
+
+            if (!findStore.isPublic()) {
+                throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
+            }else {
+                findStore.delete(email);
             }
         }
+    }
 
-        if (!findStore.isPublic()) {
-            throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
-        }else {
-            findStore.delete(email);
+    /**
+     * storeId, memberId 로 조회
+     * @param storeId
+     * @param memberId
+     * @return
+     */
+    public ResponseStoreDto findByIdAndMemberId(String storeId, Long memberId) {
+
+        if (!isValidUUID(storeId)) {
+            log.error("Invalid UUID = {}",storeId);
+            throw new UuidFormatException("Invalid UUID format");
         }
+
+        Store findStore = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
+                new StoreNotFoundException("not found store"));
+
+        return ResponseStoreDto.toDto(findStore);
     }
 
     /**
@@ -206,4 +250,5 @@ public class StoreService {
             return false;
         }
     }
+
 }
