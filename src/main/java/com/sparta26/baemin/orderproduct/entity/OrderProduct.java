@@ -39,13 +39,13 @@ public class OrderProduct extends AuditEntity {
         return new OrderProduct(price, amount, product, username);
     }
 
-    public OrderProduct(Integer price, Integer amount, Product product, String username) {
+    public OrderProduct(Integer price, Integer amount, Product product, String email) {
         this.price = price;
         this.amount = amount;
         this.product = product;
-        super.addCreatedBy(username);
+        super.addCreatedBy(email);
 
-        product.removeStock(amount);
+//        product.removeStock(amount);
     }
 
     // 주문 취소 시 상품 수량 원복 메서드

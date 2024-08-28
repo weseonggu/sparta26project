@@ -58,17 +58,20 @@ public class Order extends AuditEntity {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
     //== 생성 메서드 ==//
-    public static Order createOrder(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store, Payment payment, String username, OrderProduct... orderProducts) {
-        return new Order(address, orderType, orderRequest, deliveryRequest, totalPrice, member, store, payment, username, orderProducts);
+    public static Order createOrder(String address, OrderType orderType, String orderRequest, String deliveryRequest, Member member, Store store, String email, OrderStatus status, OrderProduct... orderProducts) {
+        return new Order(address, orderType, orderRequest, deliveryRequest, member, store, email, status, orderProducts);
     }
 
-    public Order(String address, OrderType orderType, String orderRequest, String deliveryRequest, Integer totalPrice, Member member, Store store,  Payment payment, String username, OrderProduct... orderProducts) {
+    public Order(String address, OrderType orderType, String orderRequest, String deliveryRequest, Member member, Store store, String email, OrderStatus status, OrderProduct... orderProducts) {
         this.address = address;
         this.orderType = orderType;
         this.orderRequest = orderRequest;
         this.deliveryRequest = deliveryRequest;
-        this.totalPrice = totalPrice;
+        this.status = status;
         if (member != null) {
             addMember(member);
         }
@@ -78,10 +81,8 @@ public class Order extends AuditEntity {
         for (OrderProduct orderProduct : orderProducts) {
             addOrderProduct(orderProduct);
         }
-        if (payment != null) {
-            addPayment(payment);
-        }
-        super.addCreatedBy(username);
+        this.totalPrice = getTotalPrice();
+        super.addCreatedBy(email);
     }
 
     public void addMember(Member member) {
@@ -106,6 +107,11 @@ public class Order extends AuditEntity {
 
     // 전체 주문 가격 조회
     public int getTotalPrice() {
-        return orderProducts.stream().mapToInt(OrderProduct::getPrice).sum();
+        return orderProducts.stream().mapToInt(OrderProduct::getTotalPrice).sum();
+    }
+
+    public void updateStatus(OrderStatus status, String email) {
+        this.status = status;
+        this.updateBy(email);
     }
 }
