@@ -44,22 +44,22 @@ public class Product extends AuditEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    public Product(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String username, Store store) {
+    public Product(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String email, Store store) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.category = category;
         this.imageUrl = imageUrl;
-        super.addCreatedBy(username);
+        super.addCreatedBy(email);
         if (store != null) {
             addStore(store);
         }
     }
 
     //== 생성 메서드 ==//
-    public static Product createProduct(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String username, Store store) {
-        return new Product(name, description, price, stockQuantity, category, imageUrl, username, store);
+    public static Product createProduct(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String email, Store store) {
+        return new Product(name, description, price, stockQuantity, category, imageUrl, email, store);
     }
 
 
