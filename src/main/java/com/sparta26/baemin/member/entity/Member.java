@@ -56,6 +56,14 @@ public class Member extends AuditEntity {
         super.addCreatedBy(email);
     }
 
+    public Member(Long id, String email, String username, String nickname, UserRole role) {
+        this.id = id;
+        this.email = email;
+        this.username = username;
+        this.nickname = nickname;
+        this.role = role;
+    }
+
     /**
      * 생성 메서드
      */
