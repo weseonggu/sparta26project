@@ -2,7 +2,9 @@ package com.sparta26.baemin.member.service;
 
 import com.sparta26.baemin.dto.member.RequestLogInDto;
 import com.sparta26.baemin.dto.member.RequestSignUpDto;
+import com.sparta26.baemin.dto.member.ResponseMemberToProductDto;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
+import com.sparta26.baemin.exception.exceptionsdefined.MemberNotFoundException;
 import com.sparta26.baemin.jwt.JWTUtil;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.entity.UserRole;
@@ -52,5 +54,16 @@ public class MemberService {
             throw new LoginFailException("이메일이나 비밀번호가 틀렸습니다.");
         }
         return token;
+    }
+
+    /**
+     * Product 통신을 위한 메서드
+     * @param memberId
+     * @return
+     */
+    public ResponseMemberToProductDto findByIdfromProduct(Long memberId) {
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new MemberNotFoundException("not found member"));
+        return ResponseMemberToProductDto.toDto(findMember);
     }
 }
