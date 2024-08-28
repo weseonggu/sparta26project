@@ -2,6 +2,7 @@ package com.sparta26.baemin.operatinghours.controller;
 
 import com.sparta26.baemin.dto.operatinghours.RequestOperatingHoursDto;
 import com.sparta26.baemin.dto.operatinghours.ResponseOperatingDto;
+import com.sparta26.baemin.exception.exceptionsdefined.ForbiddenAccessException;
 import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.jwt.ForContext;
 import com.sparta26.baemin.operatinghours.service.OperatingHoursService;
@@ -23,7 +24,7 @@ public class OperatingHoursController {
     private final OperatingHoursService operatingHoursService;
 
     /**
-     * 가게 운영시간 등록
+     * 가게 운영시간 등록, 가게주인만 생성가능
      * @param requestOperatingHoursDto
      * @param customUserDetails
      * @param storeId
@@ -58,10 +59,16 @@ public class OperatingHoursController {
                                                   @PathVariable("operatingId") String operatingId) {
         log.info("가게 운영시간 수정 시도 중 | operatingId = {}, memberId = {}", operatingId, customUserDetails.getForContext().getId());
         ForContext context = customUserDetails.getForContext();
+        String role = context.getRole();
         Long memberId = context.getId();
         String email = context.getEmail();
 
-        ResponseOperatingDto updatedOperatingHoursDto = operatingHoursService.updateOperatingHours(requestOperatingHoursDto, operatingId, memberId, email);
+        if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MASTER")) {
+            log.error("사용자 권한 불일치 = {}", context.getRole());
+            throw new ForbiddenAccessException("Unauthorized user");
+        }
+
+        ResponseOperatingDto updatedOperatingHoursDto = operatingHoursService.updateOperatingHours(requestOperatingHoursDto, operatingId, memberId, email, role);
         log.info("가게 운영시간 수정 완료");
         return ResponseEntity.ok(updatedOperatingHoursDto);
     }
@@ -79,8 +86,14 @@ public class OperatingHoursController {
         ForContext context = customUserDetails.getForContext();
         Long memberId = context.getId();
         String email = context.getEmail();
+        String role = context.getRole();
 
-        operatingHoursService.deleteOperatingHours(operatingId, memberId, email);
+        if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MASTER")) {
+            log.error("사용자 권한 불일치 = {}", context.getRole());
+            throw new ForbiddenAccessException("Unauthorized user");
+        }
+
+        operatingHoursService.deleteOperatingHours(operatingId, email, role);
         return ResponseEntity.ok("삭제 완료");
     }
 
