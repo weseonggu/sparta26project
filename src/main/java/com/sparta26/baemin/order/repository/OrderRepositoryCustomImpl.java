@@ -23,6 +23,7 @@ import java.util.List;
 import static com.querydsl.core.types.Order.ASC;
 import static com.querydsl.core.types.Order.DESC;
 import static com.sparta26.baemin.order.entity.QOrder.order;
+import static com.sparta26.baemin.orderproduct.entity.QOrderProduct.orderProduct;
 import static com.sparta26.baemin.product.entity.QProduct.product;
 import static com.sparta26.baemin.store.entity.QStore.store;
 
@@ -42,14 +43,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
         JPAQuery<Order> query = queryFactory
                 .selectFrom(order)
-                .join(order.store, store);
+                .join(order.store, store)
+                .leftJoin(order.orderProducts, orderProduct)
+                .leftJoin(orderProduct.product, product);
 
-        // 조건부 leftJoin
+        // 조건부 필터
         if (StringUtils.hasText(search) && !search.trim().isEmpty()) {
-            query.leftJoin(store.products, product)
-                    .where(containsStoreNameOrProductName(search));
+            query
+                    .where(
+                            store.name.containsIgnoreCase(search)
+                                    .or(product.name.containsIgnoreCase(search))
+                    );
         }
-
 
         query.where(
                         userCheck(role, email),
@@ -103,11 +108,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     private BooleanExpression statusEq(String status) {
-        return status != null ? order.status.eq(OrderStatus.valueOf(status)) : null;
-    }
-
-    private BooleanExpression containsStoreNameOrProductName(String search) {
-        return store.name.containsIgnoreCase(search)
-                .or(product.name.containsIgnoreCase(search));
+        return status != null ? order.status.eq(OrderStatus.fromString(status)) : null;
     }
 }
