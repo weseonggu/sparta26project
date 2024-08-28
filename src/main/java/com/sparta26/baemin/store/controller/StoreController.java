@@ -25,7 +25,7 @@ public class StoreController {
     private final StoreService storeService;
 
     /**
-     * 가게 생성
+     * 가게 생성, 가게주인만 생성가능
      *
      * @param requestStoreDto
      * @return
@@ -39,7 +39,7 @@ public class StoreController {
         String role = context.getRole();
 
 
-        if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MASTER")) {
+        if (!role.equals("ROLE_OWNER")) {
             log.error("사용자 권한 불일치 = {}", context.getRole());
             throw new ForbiddenAccessException("Unauthorized user");
         }
@@ -100,7 +100,7 @@ public class StoreController {
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        ResponseStoreDto responseStoreDto = storeService.updateStore(requestStoreDto, storeId, memberId, email);
+        ResponseStoreDto responseStoreDto = storeService.updateStore(requestStoreDto, storeId, memberId, email, role);
 
         return ResponseEntity.ok(responseStoreDto);
     }
@@ -152,13 +152,14 @@ public class StoreController {
         ForContext context = customUserDetails.getForContext();
         String email = context.getEmail();
         String role = context.getRole();
+        Long memberId = context.getId();
 
         if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MASTER")) {
             log.error("사용자 권한 불일치 = {}", context.getRole());
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        storeService.deleteStore(storeId, email);
+        storeService.deleteStore(storeId, email, role, memberId);
         log.info("가게 삭제 완료");
         return ResponseEntity.ok("가게 삭제 완료");
     }
