@@ -75,6 +75,18 @@ public class Store extends AuditEntity {
         }
     }
 
+    public Store(UUID id, String name, String description, String address, String phoneNumber, boolean isActive, Member member) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.isActive = isActive;
+        if (member != null) {
+            this.member = member;
+        }
+    }
+
     /**
      * 생성 메서드
      */
