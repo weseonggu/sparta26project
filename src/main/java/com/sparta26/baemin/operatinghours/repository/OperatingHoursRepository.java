@@ -2,6 +2,7 @@ package com.sparta26.baemin.operatinghours.repository;
 
 import com.sparta26.baemin.operatinghours.entity.OperatingHours;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,4 +23,8 @@ public interface OperatingHoursRepository extends JpaRepository<OperatingHours, 
 
     @Query("select o from OperatingHours o where o.isPublic = true and o.id = :id")
     Optional<OperatingHours> findIsPublicById(@Param("id") UUID id);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update OperatingHours o set o.isPublic = false, o.deletedBy = :email where o.store.id = :id")
+    void deleteByStoreId(@Param("id") UUID uuid,@Param("email") String email);
 }
