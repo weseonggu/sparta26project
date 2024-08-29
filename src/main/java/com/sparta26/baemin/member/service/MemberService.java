@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,5 +58,10 @@ public class MemberService {
             throw new LoginFailException("이메일이나 비밀번호가 틀렸습니다.");
         }
         return token;
+    }
+
+    public Page<Member> memberInfoInPage(Pageable pageable) {
+        Page<Member> members = memberRepository.findAllByRole(pageable, UserRole.ROLE_CUSTOMER);
+        return members;
     }
 }
