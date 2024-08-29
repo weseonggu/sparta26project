@@ -3,6 +3,7 @@ package com.sparta26.baemin.operatinghours.entity;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.dto.operatinghours.RequestOperatingHoursDto;
 import com.sparta26.baemin.dto.operatinghours.ResponseOperatingDto;
+import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,9 +36,9 @@ public class OperatingHours extends AuditEntity {
     @Column(name = "last_order")
     private String lastOrder;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id")
-//    public Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    public Store store;
 
     public OperatingHours(String openingTime, String closingTime, String openDays, String lastOrder, String email) {
         this.openingTime = openingTime;
@@ -51,16 +52,16 @@ public class OperatingHours extends AuditEntity {
      * 운영시간 생성 시 사용!!
      */
 
-//    public OperatingHours(String openingTime, String closingTime, String openDays, String lastOrder, Store store, String email) {
-//        this.openingTime = openingTime;
-//        this.closingTime = closingTime;
-//        this.openDays = openDays;
-//        this.lastOrder = lastOrder;
-//        if(store != null) {
-//            addStore(store);
-//        }
-//        super.addCreatedBy(email);
-//    }
+    public OperatingHours(String openingTime, String closingTime, String openDays, String lastOrder, Store store, String email) {
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+        this.openDays = openDays;
+        this.lastOrder = lastOrder;
+        if(store != null) {
+            addStore(store);
+        }
+        super.addCreatedBy(email);
+    }
 
     public OperatingHours(UUID id, String openingTime, String closingTime, String openDays, String lastOrder) {
         this.id = id;
@@ -78,10 +79,10 @@ public class OperatingHours extends AuditEntity {
                 response.getLast_order());
     }
 
-//    public void addStore(Store store) {
-//        this.store = store;
-//        store.getOperatingHours().add(this);
-//    }
+    public void addStore(Store store) {
+        this.store = store;
+        store.getOperatingHours().add(this);
+    }
 
     /**
      * 업데이트 메서드
