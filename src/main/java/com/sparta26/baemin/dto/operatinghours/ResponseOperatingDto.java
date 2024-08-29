@@ -16,8 +16,6 @@ public class ResponseOperatingDto {
     private String open_days;
     private String last_order;
 
-
-
     public static ResponseOperatingDto toDto(OperatingHours savedOperating) {
         return new ResponseOperatingDto(savedOperating.getId().toString(),
                 savedOperating.getOpeningTime(),
