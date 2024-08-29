@@ -17,6 +17,7 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
                                                              @Param("phoneNumber") String phoneNumber,
                                                              @Param("memberId") Long memberId);
 
+    @Query("select s from Store s where s.id = :id and s.member.id = :member_id and s.isPublic = true")
     Optional<Store> findByIdAndMemberId(@Param("id") UUID id, @Param("member_id") Long member_id);
 
     @Query("select s from Store s left join fetch s.operatingHours where s.id = :id and s.isPublic = true")
@@ -27,4 +28,5 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     @Query("select s from Store s where s.member.id = :memberId and s.isPublic = true")
     Optional<Store> findByMemberId(@Param("memberId") Long memberId);
+
 }
