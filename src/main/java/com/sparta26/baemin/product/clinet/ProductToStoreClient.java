@@ -5,4 +5,6 @@ import com.sparta26.baemin.dto.store.ResponseStoreDto;
 public interface ProductToStoreClient {
 
     ResponseStoreDto findByIdAndMemberId(String storeId, Long memberId);
+
+    ResponseStoreDto findById(String storeId);
 }
