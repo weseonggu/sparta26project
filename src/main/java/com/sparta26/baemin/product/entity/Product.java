@@ -1,6 +1,7 @@
 package com.sparta26.baemin.product.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
+import com.sparta26.baemin.dto.product.RequestProductWithoutStockDto;
 import com.sparta26.baemin.exception.exceptionsdefined.NotEnoughStockException;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
@@ -96,5 +97,25 @@ public class Product extends AuditEntity {
 
     public void changeAvailable() {
         this.isAvailable = false;
+    }
+
+    public Product update(RequestProductWithoutStockDto request, String email) {
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
+        if (request.getDescription() != null) {
+            this.description = request.getDescription();
+        }
+        if (request.getPrice() != null) {
+            this.price = request.getPrice();
+        }
+        if (request.getCategory() != null) {
+            this.category = request.getCategory();
+        }
+        if (request.getImageUrl() != null) {
+            this.imageUrl = request.getImageUrl();
+        }
+        addUpdatedBy(email);
+        return this;
     }
 }
