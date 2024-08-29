@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Entity
 @Table(name = "p_MEMBERS")
@@ -44,28 +45,32 @@ public class Member extends AuditEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
     @Builder
-    public Member(String email, String password, String username, String nickname, UserRole role, Address... addresses) {
+    public Member(String email, String password, String username, String nickname, UserRole role) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.nickname = nickname;
         this.role = role;
-        if (addresses != null) {
-            addAddress(addresses);
-        }
+
         super.addCreatedBy(email);
     }
+
 
     /**
      * 생성 메서드
      */
-    public static Member createMember(String email, String password, String username, String nickname, UserRole role, Address... addresses) {
-        return new Member(email, password, username, nickname, role, addresses);
+    public static Member createMember(String email, String password, String username, String nickname, UserRole role) {
+        return new Member(email, password, username, nickname, role);
     }
 
     public void addAddress(Address... address) {
         addresses.addAll(Arrays.asList(address));
     }
 
+    public void updateBy(String username, String nickname, String updateBy) {
+        super.updateBy(updateBy);
+        this.nickname = nickname;
+        this.username = username;
+    }
 
 }

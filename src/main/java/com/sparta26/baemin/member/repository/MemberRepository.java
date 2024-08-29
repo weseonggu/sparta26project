@@ -14,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Optional<Member> findByEmail(String email);
 
     Optional<Page<Member>> findAllByRole(Pageable pageable, UserRole role);
+
+    Optional<Page<Member>> findAllByRoleAndIsPublic(Pageable pageable, UserRole userRole, boolean isPublic);
 }

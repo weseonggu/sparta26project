@@ -48,7 +48,7 @@ public class AuditEntity {
         this.isPublic = false;
     }
 
-    protected void updateBy(String email) {
+    public void updateBy(String email) {
         this.updatedBy = email;
     }
 

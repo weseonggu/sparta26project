@@ -79,7 +79,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true, timeout = 3)
     public Page<Member> memberInfoInPage(Pageable pageable) {
-        Page<Member> members = memberRepository.findAllByRole(pageable, UserRole.ROLE_CUSTOMER).orElseThrow();
+        Page<Member> members = memberRepository.findAllByRoleAndIsPublic(pageable, UserRole.ROLE_CUSTOMER, true).orElseThrow();
         return members;
     }
 }

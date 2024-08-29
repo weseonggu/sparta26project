@@ -2,6 +2,7 @@ package com.sparta26.baemin.security;
 
 import com.sparta26.baemin.jwt.JWTFilter;
 import com.sparta26.baemin.jwt.JwtAuthenticationEntryPoint;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,9 +54,17 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers( "/v1/signUp","/v1/logIn").permitAll()
-                .requestMatchers("/v1/test", "/v1/member/**","/v1/members/page?**").hasRole("CUSTOMER")
+                .requestMatchers("/v1/test", "/v1/members/myinfo/**").hasRole("CUSTOMER")
+                .requestMatchers("/v1/members/page**").hasAnyRole("MANAGER", "MASTER")
+                .requestMatchers("/v1/members/update","/v1/members/delete/**").hasAnyRole("MANAGER","CUSTOMER","MASTER")
                 .anyRequest().authenticated());
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+        http.exceptionHandling(handler -> handler.accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("{\"error\": \"접근할 수 없습니다.\"}");
+                })
+        );
 
         return http.build();
     }
