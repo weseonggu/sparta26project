@@ -21,8 +21,9 @@ public class ResponseFindStoreDto {
     private String phone_number;
     private boolean is_active;
     private List<ResponseOperatingDto> operating = new ArrayList<>();
+    private Long member_id;
 
-    public ResponseFindStoreDto(String id, String name, String description, String address, String phone_number, boolean is_active, List<ResponseOperatingDto> operating) {
+    public ResponseFindStoreDto(String id, String name, String description, String address, String phone_number, boolean is_active, List<ResponseOperatingDto> operating, Long member_id) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -30,6 +31,7 @@ public class ResponseFindStoreDto {
         this.phone_number = phone_number;
         this.is_active = is_active;
         this.operating = operating;
+        this.member_id = member_id;
     }
 
     public ResponseFindStoreDto(Store store) {
@@ -39,6 +41,8 @@ public class ResponseFindStoreDto {
         this.address = store.getAddress();
         this.phone_number = store.getPhoneNumber();
         this.is_active = store.isActive();
+        this.member_id = store.getMember().getId();
+
         List<OperatingHours> operatingHours = store.getOperatingHours();
         for (OperatingHours op : operatingHours) {
             operating.add(new ResponseOperatingDto(op.getId().toString(),
@@ -47,6 +51,7 @@ public class ResponseFindStoreDto {
                     op.getOpenDays(),
                     op.getLastOrder()));
         }
+
     }
 
 
