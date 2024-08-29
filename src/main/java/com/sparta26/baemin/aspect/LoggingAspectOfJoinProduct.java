@@ -18,22 +18,6 @@ public class LoggingAspectOfJoinProduct {
     public void applicationPackagePointcut() {
     }
 
-    // 메서드 실행 전 로그 기록
-    @Before("applicationPackagePointcut()")
-    public void logBefore(ProceedingJoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        String className = joinPoint.getSignature().getDeclaringTypeName();
-        log.info("메서드 실행 전 로그 - 클래스명: {}, 메서드명: {}", className, methodName);
-    }
-
-    // 메서드 실행 후 로그 기록
-    @After("applicationPackagePointcut()")
-    public void logAfter(ProceedingJoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        String className = joinPoint.getSignature().getDeclaringTypeName();
-        log.info("메서드 실행 후 로그 - 클래스명: {}, 메서드명: {}", className, methodName);
-    }
-
     // 메서드 실행 전후로 로그 기록 (메서드 실행 시간 측정)
     @Around("applicationPackagePointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -43,7 +27,13 @@ public class LoggingAspectOfJoinProduct {
         long startTime = System.currentTimeMillis();
         log.info("메서드 실행 시작 - 클래스명: {}, 메서드명: {}", className, methodName);
 
-        Object result = joinPoint.proceed(); // 실제 메서드 실행
+        Object result = null;
+        try {
+            result = joinPoint.proceed(); // 실제 메서드 실행
+        } catch (Throwable ex) {
+            log.error("예외 발생 - 클래스명: {}, 메서드명: {}, 예외 메시지: {}", className, methodName, ex.getMessage());
+            throw ex; // 예외를 다시 던져줍니다.
+        }
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         log.info("메서드 실행 종료 - 클래스명: {}, 메서드명: {}, 실행 시간: {}ms", className, methodName, elapsedTime);
