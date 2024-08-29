@@ -20,10 +20,10 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
     @Query("select s from Store s where s.id = :id and s.member.id = :member_id and s.isPublic = true")
     Optional<Store> findByIdAndMemberId(@Param("id") UUID id, @Param("member_id") Long member_id);
 
-    @Query("select s from Store s left join fetch s.operatingHours where s.id = :id and s.isPublic = true")
+    @Query("select s from Store s left join fetch s.operatingHours o where s.id = :id and s.isPublic = true and o.isPublic = true")
     Page<Store> findByIdWithOperatingHours(@Param("id") UUID storeId, Pageable pageable);
 
-    @Query("select s from Store s left join fetch s.operatingHours where s.isPublic = true")
+    @Query("select s from Store s left join fetch s.operatingHours o where s.isPublic = true and o.isPublic = true")
     Page<Store> findPagingAll(Pageable pageable);
 
     @Query("select s from Store s where s.member.id = :memberId and s.isPublic = true")
