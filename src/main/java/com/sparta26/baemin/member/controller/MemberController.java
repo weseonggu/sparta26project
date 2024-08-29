@@ -10,6 +10,7 @@ import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.service.MemberCacheService;
 import com.sparta26.baemin.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,8 @@ public class MemberController {
      */
     @GetMapping("/v1/members/myinfo/{email}")
     @PreAuthorize("(isAuthenticated() && principal.username == #email)")
-    public ResponseEntity<?> getMember(@PathVariable("email") String email) {
+    public ResponseEntity<?> getMember(@PathVariable("email") String email, HttpServletRequest request) {
+
         ResponseMemberInfoDto memberInfo = memberCacheService.getMemberInfo(email);
         // 수동 필터
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
@@ -80,7 +82,8 @@ public class MemberController {
      */
     @GetMapping("/v1/members/page")
     @PreAuthorize("isAuthenticated() && (hasAuthority('ROLE_MANAGER')|| hasAuthority('ROLE_MASTER'))")
-    public Page<ResponseMemberInfoDto> getMember(Pageable pageable){
+
+    public Page<ResponseMemberInfoDto> getMember(Pageable pageable, HttpServletRequest request){
         Page<Member> page = memberService.memberInfoInPage(pageable);
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
                 "MemberInfoFilter",
@@ -97,14 +100,18 @@ public class MemberController {
      * @return
      */
     @PatchMapping("/v1/members/update")
-    public ResponseEntity<String> updateMemberInfo(@RequestBody RequestSignUpDto requestSignUpDto, @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<String> updateMemberInfo(@RequestBody RequestSignUpDto requestSignUpDto,
+                                                   @AuthenticationPrincipal CustomUserDetails userDetails,
+                                                   HttpServletRequest request){
         memberCacheService.updateMemberInfo(requestSignUpDto, userDetails);
         return new ResponseEntity<String>("변경했습니다.", HttpStatus.OK);
     }
     
     // 맴버 삭제: 삭제가 아닌 정보 공개 여부를 false로 변경
     @DeleteMapping("/v1/members/delete/{email}")
-    public ResponseEntity<String> deleteMember(@PathVariable("email") String email, @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<String> deleteMember(@PathVariable("email") String email,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails,
+                                               HttpServletRequest request){
         memberCacheService.deleteMember(email, userDetails);
         return new ResponseEntity<String>("탈퇴되었습니다.", HttpStatus.OK);
     }
