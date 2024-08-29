@@ -20,7 +20,8 @@ public class RequestOperatingHoursDto {
     private String closing_time;
 
     @NotBlank
-    @Pattern(regexp = "^(월요일|화요일|수요일|목요일|금요일|토요일|일요일)(, (월요일|화요일|수요일|목요일|금요일|토요일|일요일))*$", message = "Open days must be in Korean weekday names separated by commas (e.g., 월요일, 화요일, 수요일)")
+    @Pattern(regexp = "^(월요일|화요일|수요일|목요일|금요일|토요일|일요일)$",
+            message = "Open days must be a single Korean weekday name (e.g., 월요일, 화요일, 수요일)")
     private String open_days;
 
     @NotBlank
