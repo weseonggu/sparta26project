@@ -37,6 +37,7 @@ public class StoreController {
         ForContext context = customUserDetails.getForContext();
         Long memberId = context.getId();
         String role = context.getRole();
+        String email = context.getEmail();
 
 
         if (!role.equals("ROLE_OWNER")) {
@@ -44,7 +45,7 @@ public class StoreController {
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        ResponseStoreDto responseStoreDto = storeService.createStore(requestStoreDto, memberId);
+        ResponseStoreDto responseStoreDto = storeService.createStore(requestStoreDto, memberId, email);
         log.info("가게 생성 완료 | responseStoreDto = {} | Member = {}", responseStoreDto, memberId);
         return ResponseEntity.ok(responseStoreDto);
     }
@@ -77,7 +78,7 @@ public class StoreController {
     }
 
     /**
-     * 가게 수정
+     * 가게 수정, 가게주인 관리자 가능
      *
      * @param requestStoreDto
      * @param customUserDetails
@@ -106,7 +107,7 @@ public class StoreController {
     }
 
     /**
-     * 가게 활성화 메서드
+     * 가게 활성화 메서드, 가게 주인
      *
      * @param customUserDetails
      * @return
@@ -123,7 +124,7 @@ public class StoreController {
     }
 
     /**
-     * 가게 비활성화 메서드
+     * 가게 비활성화 메서드, 가게 주인
      *
      * @param customUserDetails
      * @return
@@ -140,7 +141,7 @@ public class StoreController {
     }
 
     /**
-     * 가게 삭제
+     * 가게 삭제, 가게 주인 관리자 가능
      * @param customUserDetails
      * @param storeId
      * @return
