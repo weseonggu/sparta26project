@@ -9,6 +9,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import com.sparta26.baemin.exception.exceptionsdefined.*;
+import io.lettuce.core.RedisCommandTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -59,6 +60,18 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 
         FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), errorMessages);
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+    /**
+     * 레디스 응답이 없어 시간 초과시
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(RedisCommandTimeoutException.class)
+    public final ResponseEntity<FailMessage> handeleRedisCommandTimeoutException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of("잠시후 다시 시도해주세요"));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sparta26.baemin.dto.member.RequestLogInDto;
 import com.sparta26.baemin.dto.member.RequestSignUpDto;
 import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
+import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.service.MemberCacheService;
 import com.sparta26.baemin.member.service.MemberService;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,12 +35,22 @@ public class MemberController {
     private final MemberCacheService memberCacheService;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 회원 가입
+     * @param member: 이름, 닉네임, 이메일, 비번, 권한(이상한 권한 입력시 가입 못함)
+     * @return
+     */
     @PostMapping("/v1/signUp")
     public ResponseEntity<?> signUp(@Valid @RequestBody RequestSignUpDto member) {
         memberService.createMember(member);
         return new ResponseEntity<String>("회원가입에 성공했습니다.", HttpStatus.OK);
     }
 
+    /**
+     * 로그인 요청
+     * @param member 이메일, 비밀번호
+     * @return
+     */
     @PostMapping("/v1/logIn")
     public ResponseEntity<?> logIn(@Valid @RequestBody RequestLogInDto member) {
         String token = memberService.attemptLogIn(member);
@@ -49,7 +61,7 @@ public class MemberController {
 
     /**
      * 사용자 정보 조회 사용자일 경우 본인만 가능하고 매니저일경우 타인의 정보 조회 가능
-     * @param email
+     * @param email  사용자 이메일
      * @return
      */
     @GetMapping("/v1/members/{email}")
@@ -65,7 +77,11 @@ public class MemberController {
         return new ResponseEntity<ResponseMemberInfoDto> (memberInfo,HttpStatus.OK);
     }
 
-    // 페이징을 사용한 사용자 전체 조회 매니저, 마스터만 가능
+    /**
+     * 페이징을 사용한 사용자 전체 조회 매니저, 마스터만 가능
+     * @param pageable
+     * @return
+     */
     @GetMapping("/v1/members/page")
     @PreAuthorize("isAuthenticated() && (hasAuthority('ROLE_MANAGER')|| hasAuthority('ROLE_MASTER'))")
     public Page<ResponseMemberInfoDto> getMember(Pageable pageable){
@@ -78,6 +94,10 @@ public class MemberController {
         return page.map(ResponseMemberInfoDto::new);
     }
     // 개별 사용자 정보 수정 사용자의 경우 본인만 가능, 매니저의 경우는 타인도 가능
+    @PutMapping("/v1/members/update")
+    public void updateMemberInfo(@RequestBody RequestSignUpDto requestSignUpDto, @AuthenticationPrincipal CustomUserDetails userDetails){
+        memberCacheService.updateMemberInfo(requestSignUpDto, userDetails);
+    }
     
     // 맴버 삭제: 삭제가 아닌 정보 공개 여부를 false로 변경
 }

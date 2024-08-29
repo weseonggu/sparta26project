@@ -8,6 +8,13 @@ spring:
       port: 6379
       username: default
       password: systempass
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+        shutdown-timeout: 100ms
+      timeout: 1s
 
   datasource:
     driver-class-name: org.postgresql.Driver

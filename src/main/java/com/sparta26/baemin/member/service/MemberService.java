@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private  final JWTUtil jwtUtil;
 
-    @Transactional
+    /**
+     * 회원가입 서비스
+     * @param member
+     * @return
+     */
+    @Transactional(timeout = 2)
     public Member createMember(RequestSignUpDto member){
         UserRole role = UserRole.fromString(member.getRoleCode());
         Member user;
@@ -46,7 +52,13 @@ public class MemberService {
         return memberRepository.save(user);
 
     }
-    @Transactional(readOnly = true)
+
+    /**
+     * 로그인 서비스
+     * @param member
+     * @return
+     */
+    @Transactional(readOnly = true, timeout = 2)
     public String attemptLogIn(RequestLogInDto member) {
         // DB에서 사용장 정보 가져 오기
         ResponseMemberInfoDto db_member = memberCacheService.getMemberInfo(member.getEmail());
@@ -60,8 +72,14 @@ public class MemberService {
         return token;
     }
 
+    /**
+     * 일반 사용자 조회
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true, timeout = 3)
     public Page<Member> memberInfoInPage(Pageable pageable) {
-        Page<Member> members = memberRepository.findAllByRole(pageable, UserRole.ROLE_CUSTOMER);
+        Page<Member> members = memberRepository.findAllByRole(pageable, UserRole.ROLE_CUSTOMER).orElseThrow();
         return members;
     }
 }
