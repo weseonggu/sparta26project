@@ -6,11 +6,11 @@ import com.sparta26.baemin.dto.product.ResponseProductDto;
 import com.sparta26.baemin.dto.store.ResponseStoreDto;
 import com.sparta26.baemin.exception.exceptionsdefined.ProductNotFoundException;
 import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
-import com.sparta26.baemin.product.clinet.ProductToMemberClient;
 import com.sparta26.baemin.product.clinet.ProductToStoreClient;
 import com.sparta26.baemin.product.entity.Product;
 import com.sparta26.baemin.product.repository.ProductRepository;
 import com.sparta26.baemin.store.entity.Store;
+import com.sparta26.baemin.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductToStoreClient productToStoreClient;
-    private final ProductToMemberClient productToMemberClient;
+    private final StoreRepository storeRepository;
 
     /**
      * 상품 등록 가게 주인만 가능
@@ -38,10 +38,16 @@ public class ProductService {
      */
     @Transactional
     public ResponseProductDto createProduct(RequestProductDto request, String storeId, Long memberId, String email) {
-        // product 세팅을 위한 조회
-        ResponseStoreDto findStore = productToStoreClient.findByIdAndMemberId(storeId, memberId);
 
-        Store store = new Store(UUID.fromString(findStore.getId()));
+        if (!isValidUUID(storeId)) {
+            log.error("Invalid UUID = {}",storeId);
+            throw new UuidFormatException("Invalid UUID format");
+        }
+
+        Store findStore = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
+                new ProductNotFoundException(String.format("Store with id %s not found", storeId)));
+
+        Store store = new Store(findStore.getId());
 
         Product product = Product.createProduct(request.getName(),
                 request.getDescription(),
