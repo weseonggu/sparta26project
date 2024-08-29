@@ -1,6 +1,5 @@
 package com.sparta26.baemin.store.service;
 
-import com.sparta26.baemin.dto.operatinghours.RequestOperatingHoursDto;
 import com.sparta26.baemin.dto.store.RequestStoreDto;
 import com.sparta26.baemin.dto.store.ResponseFindStoreDto;
 import com.sparta26.baemin.dto.store.ResponseStoreDto;
@@ -56,20 +55,12 @@ public class StoreService {
             }
         }
 
-        List<OperatingHours> operatingHours = new ArrayList<>();
-
-        for (RequestOperatingHoursDto op : requestStoreDto.getOperating_hours()) {
-            operatingHours.add(new OperatingHours(op.getOpening_time(), op.getClosing_time(),
-                    op.getOpen_days(), op.getLast_order(), email));
-        }
-
         Store store = Store.createStore(requestStoreDto.getName(),
                 requestStoreDto.getDescription(),
                 requestStoreDto.getAddress(),
                 requestStoreDto.getPhone_number(),
                 member,
-                email,
-                operatingHours.toArray(new OperatingHours[0]));
+                email);
 
         Store savedStore = storeRepository.save(store);
 
