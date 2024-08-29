@@ -64,6 +64,10 @@ public class Member extends AuditEntity {
         this.role = role;
     }
 
+    public Member(Long id) {
+        this.id = id;
+    }
+
     /**
      * 생성 메서드
      */
