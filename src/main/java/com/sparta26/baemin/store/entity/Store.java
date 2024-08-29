@@ -16,7 +16,6 @@ import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,11 +61,10 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store")
     private List<Category> categories = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @JoinColumn(name = "store_id")
+    @OneToMany(mappedBy = "store")
     private List<OperatingHours> operatingHours = new ArrayList<>();
 
-    public Store(String name, String description, String address, String phoneNumber, Member member, String email, OperatingHours ... operatingHours) {
+    public Store(String name, String description, String address, String phoneNumber, Member member, String email) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -74,9 +72,6 @@ public class Store extends AuditEntity {
         if (member != null) {
             this.member = member;
             super.addCreatedBy(email);
-        }
-        if (operatingHours != null) {
-            this.operatingHours.addAll(Arrays.asList(operatingHours));
         }
     }
 
@@ -96,8 +91,8 @@ public class Store extends AuditEntity {
     /**
      * 생성 메서드
      */
-    public static Store createStore(String name, String description, String address, String phoneNumber, Member member, String email, OperatingHours... operatingHours) {
-        return new Store(name, description, address, phoneNumber, member, email, operatingHours);
+    public static Store createStore(String name, String description, String address, String phoneNumber, Member member, String email) {
+        return new Store(name, description, address, phoneNumber, member, email);
     }
 
     // 활성화 상태 변경
