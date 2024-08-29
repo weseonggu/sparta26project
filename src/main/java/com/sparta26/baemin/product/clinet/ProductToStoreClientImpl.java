@@ -15,4 +15,9 @@ public class ProductToStoreClientImpl implements ProductToStoreClient {
     public ResponseStoreDto findByIdAndMemberId(String storeId, Long memberId) {
         return storeService.findByIdAndMemberId(storeId, memberId);
     }
+
+    @Override
+    public ResponseStoreDto findById(String storeId) {
+        return storeService.findById(storeId);
+    }
 }
