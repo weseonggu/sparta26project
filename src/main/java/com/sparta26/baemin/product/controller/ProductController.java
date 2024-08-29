@@ -43,6 +43,13 @@ public class ProductController {
     }
 
 
+    /**
+     * 상품 수정 | 가게 주인, 관리자
+     * @param request
+     * @param customUserDetails
+     * @param productId
+     * @return
+     */
     @Secured({"ROLE_OWNER", "ROLE_MASTER"})
     @PatchMapping("/products/{productId}")
     public ResponseEntity<?> updateProduct(@RequestBody RequestProductWithoutStockDto request,
