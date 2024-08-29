@@ -16,6 +16,7 @@ import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,37 +62,42 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store")
     private List<Category> categories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "store")
+    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @JoinColumn(name = "store_id")
     private List<OperatingHours> operatingHours = new ArrayList<>();
 
-    public Store(String name, String description, String address, String phoneNumber, Member member) {
+    public Store(String name, String description, String address, String phoneNumber, Member member, String email, OperatingHours ... operatingHours) {
         this.name = name;
         this.description = description;
         this.address = address;
         this.phoneNumber = phoneNumber;
         if (member != null) {
             this.member = member;
-            super.addCreatedBy(member.getEmail());
+            super.addCreatedBy(email);
+        }
+        if (operatingHours != null) {
+            this.operatingHours.addAll(Arrays.asList(operatingHours));
         }
     }
 
-    public Store(UUID id, String name, String description, String address, String phoneNumber, boolean isActive, Member member) {
+    public Store(UUID id, String name, String description, String address, String phoneNumber, boolean isActive) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.isActive = isActive;
-        if (member != null) {
-            this.member = member;
-        }
+    }
+
+    public Store(UUID id) {
+        this.id = id;
     }
 
     /**
      * 생성 메서드
      */
-    public static Store createStore(String name, String description, String address, String phoneNumber, Member member) {
-        return new Store(name, description, address, phoneNumber, member);
+    public static Store createStore(String name, String description, String address, String phoneNumber, Member member, String email, OperatingHours... operatingHours) {
+        return new Store(name, description, address, phoneNumber, member, email, operatingHours);
     }
 
     // 활성화 상태 변경
