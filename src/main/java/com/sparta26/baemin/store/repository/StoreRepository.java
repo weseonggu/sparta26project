@@ -4,6 +4,7 @@ import com.sparta26.baemin.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,7 +18,7 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
                                                              @Param("phoneNumber") String phoneNumber,
                                                              @Param("memberId") Long memberId);
 
-    @Query("select s from Store s where s.id = :id and s.member.id = :member_id and s.isPublic = true")
+    @Query("select s from Store s  where s.id = :id and s.member.id = :member_id and s.isPublic = true")
     Optional<Store> findByIdAndMemberId(@Param("id") UUID id, @Param("member_id") Long member_id);
 
     @Query("select s from Store s left join fetch s.operatingHours o where s.id = :id and s.isPublic = true and o.isPublic = true")
@@ -28,5 +29,14 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     @Query("select s from Store s where s.member.id = :memberId and s.isPublic = true")
     Optional<Store> findByMemberId(@Param("memberId") Long memberId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Store s set s.isPublic = false, s.deletedBy = :email, s.deletedAt = local datetime where s.id = :id and s.member.id = :memberId")
+    void deleteByIdAndMemberId(@Param("id") UUID uuid,@Param("memberId") Long memberId, @Param("email") String email);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Store s set s.isPublic = false, s.deletedBy = :email, s.deletedAt = local datetime where s.id = :id")
+    void deleteById(@Param("id") UUID uuid,@Param("email") String email);
+
 
 }
