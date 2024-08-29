@@ -7,7 +7,7 @@ import com.sparta26.baemin.exception.exceptionsdefined.MemberStoreLimitExceededE
 import com.sparta26.baemin.exception.exceptionsdefined.StoreNotFoundException;
 import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
 import com.sparta26.baemin.member.entity.Member;
-import com.sparta26.baemin.operatinghours.entity.OperatingHours;
+import com.sparta26.baemin.operatinghours.repository.OperatingHoursRepository;
 import com.sparta26.baemin.store.entity.Store;
 import com.sparta26.baemin.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +27,7 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final OperatingHoursRepository operatingHoursRepository;
 
     /**
      * 가게 생성, 가게주인만 생성가능
@@ -189,37 +188,28 @@ public class StoreService {
         if (role.equals("ROLE_OWNER")) {
             Store findStore = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() -> new StoreNotFoundException("not found store or 본인의 가게만 삭제 가능합니다."));
 
-            List<OperatingHours> operatingHours = new ArrayList<>(findStore.getOperatingHours());
-
-
-            if (!operatingHours.isEmpty()) {
-                for (OperatingHours operatingHour : operatingHours) {
-                    operatingHour.delete(email);
-                }
-            }
+            // 가게 false 변환
             if (!findStore.isPublic()) {
                 throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
-            } else {
-                findStore.delete(email);
+            } //else {
+                storeRepository.deleteByIdAndMemberId(UUID.fromString(storeId), memberId, email);
+//            }
+
+            // 운영시간 false 변환
+            if (!findStore.getOperatingHours().isEmpty()) {
+                operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
             }
         } else {
             Store findStore = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() -> new StoreNotFoundException("not found store"));
-            List<OperatingHours> operatingHours = new ArrayList<>(findStore.getOperatingHours());
 
-            for (OperatingHours operatingHour : operatingHours) {
-                operatingHour.delete(email);
-            }
-
-            if (!operatingHours.isEmpty()) {
-                for (OperatingHours operatingHour : operatingHours) {
-                    operatingHour.delete(email);
-                }
+            if (!findStore.getOperatingHours().isEmpty()) {
+                operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
             }
 
             if (!findStore.isPublic()) {
                 throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
             }else {
-                findStore.delete(email);
+                storeRepository.deleteById(UUID.fromString(storeId), email);
             }
         }
     }
