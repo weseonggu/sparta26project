@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sparta26.baemin.dto.member.RequestLogInDto;
+import com.sparta26.baemin.dto.member.RequestSearchMemberDto;
 import com.sparta26.baemin.dto.member.RequestSignUpDto;
 import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
 import com.sparta26.baemin.jwt.CustomUserDetails;
@@ -80,14 +81,14 @@ public class MemberController {
      */
     @GetMapping("/v1/members/page")
     @PreAuthorize("isAuthenticated() && (hasAuthority('ROLE_MANAGER')|| hasAuthority('ROLE_MASTER'))")
-    public Page<ResponseMemberInfoDto> getMember(Pageable pageable){
-        Page<Member> page = memberService.memberInfoInPage(pageable);
+    public Page<ResponseMemberInfoDto> getMember(Pageable pageable, RequestSearchMemberDto request){
+        Page<ResponseMemberInfoDto> page = memberService.memberInfoInPage(pageable, request);
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
                 "MemberInfoFilter",
                 SimpleBeanPropertyFilter.serializeAllExcept("password")
         );
         objectMapper.setFilterProvider(filters);
-        return page.map(ResponseMemberInfoDto::new);
+        return page;
     }
 
     /**

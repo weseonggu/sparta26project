@@ -1,6 +1,7 @@
 package com.sparta26.baemin.member.service;
 
 import com.sparta26.baemin.dto.member.RequestLogInDto;
+import com.sparta26.baemin.dto.member.RequestSearchMemberDto;
 import com.sparta26.baemin.dto.member.RequestSignUpDto;
 import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
@@ -75,8 +76,7 @@ public class MemberService {
      * @return
      */
     @Transactional(readOnly = true, timeout = 3)
-    public Page<Member> memberInfoInPage(Pageable pageable) {
-        Page<Member> members = memberRepository.findAllByRoleAndIsPublic(pageable, UserRole.ROLE_CUSTOMER, true).orElseThrow();
-        return members;
+    public Page<ResponseMemberInfoDto> memberInfoInPage(Pageable pageable, RequestSearchMemberDto search) {
+        return memberRepository.findAllMember(pageable,search);
     }
 }
