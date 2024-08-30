@@ -26,7 +26,7 @@ public class AiController {
     private final AiService aiService;
 
     /**
-     * Ai 질문 메서드
+     * Ai 질문 메서드, 가게 주인 관리자 가능
      */
     @PostMapping("/questions")
     public ResponseEntity<?> questions(@Valid @RequestBody RequestAiDto requestAiDto,
@@ -47,7 +47,7 @@ public class AiController {
     }
 
     /**
-     * Ai 질답 리스트 검색
+     * Ai 질답 리스트 검색, 관리자 가능
      */
     @GetMapping("/questions")
     public ResponseEntity<?> questionList(@AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -67,7 +67,7 @@ public class AiController {
     }
 
     /**
-     * Ai 질답 삭제
+     * Ai 질답 삭제, 관리자 가능
      */
     @DeleteMapping("/questions/{aiId}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal CustomUserDetails customUserDetails,

@@ -203,4 +203,11 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(ProductNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }

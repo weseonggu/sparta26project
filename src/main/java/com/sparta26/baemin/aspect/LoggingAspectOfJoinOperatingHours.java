@@ -6,18 +6,17 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 /**
- * Ai 관련 로그 작성하는 곳
+ * OperatingHours 관련 로그 작성하는 곳
  */
 @Aspect
 @Component
-@Slf4j(topic = "AITopic")
-public class LoggingAspectOfJoinAi {
+@Slf4j(topic = "OperatingHours")
+public class LoggingAspectOfJoinOperatingHours {
 
     // 두 패키지의 모든 클래스와 메서드에 적용될 포인트컷 정의
-    @Pointcut("execution(* com.sparta26.baemin.ai..*(..))")
+    @Pointcut("execution(* com.sparta26.baemin.operatinghours..*(..))")
     public void applicationPackagePointcut() {
     }
-
 
     // 메서드 실행 전후로 로그 기록 (메서드 실행 시간 측정)
     @Around("applicationPackagePointcut()")
