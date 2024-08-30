@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,7 +29,7 @@ public class LoggingAspectOfJoinMember {
      */
     @Around("execution(* com.sparta26.baemin.member.service.MemberService.createMember(..))")
     public Object createMemberAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        return aspectCommonLogic.ChangeRedundantMethods(joinPoint);
+        return aspectCommonLogic.redundantMethods(joinPoint);
     }
 
     /**
@@ -42,10 +41,10 @@ public class LoggingAspectOfJoinMember {
     @Around("execution(* com.sparta26.baemin.member.service.MemberCacheService.updateMemberInfo(..))")
     public Object updateMemberInfoAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        return aspectCommonLogic.ChangeRedundantMethods(joinPoint);
+        return aspectCommonLogic.redundantMethods(joinPoint);
     }
     /**
-     * 회원정보  공개여부 변경
+     * 회원정보 수정
      * @param joinPoint
      * @return
      * @throws Throwable
@@ -53,20 +52,7 @@ public class LoggingAspectOfJoinMember {
     @Around("execution(* com.sparta26.baemin.member.service.MemberCacheService.deleteMember(..))")
     public Object deleteMemberAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        return aspectCommonLogic.ChangeRedundantMethods(joinPoint);
+        return aspectCommonLogic.redundantMethods(joinPoint);
     }
-
-    @Pointcut("execution(* com.sparta26.baemin.member.controller..*(..))")
-    public void serviceMethods() {}
-
-    @Pointcut("execution(* com.sparta26.baemin.member.controller.MemberController.signUp(..)) || execution(* com.sparta26.baemin.member.controller.MemberController.logIn(..))")
-    public void excludedMethod() {}
-
-    @Around("serviceMethods() && !excludedMethod()")
-    public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        return aspectCommonLogic.ResponseRedundantMethods(joinPoint);
-    }
-
 
 }
