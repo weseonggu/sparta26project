@@ -1,4 +1,4 @@
-package com.sparta26.baemin.order.repository;
+package com.sparta26.baemin.payment.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -6,67 +6,55 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta26.baemin.member.entity.UserRole;
-import com.sparta26.baemin.order.entity.Order;
-import com.sparta26.baemin.order.entity.OrderStatus;
+import com.sparta26.baemin.payment.entity.Payment;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.querydsl.core.types.Order.ASC;
 import static com.querydsl.core.types.Order.DESC;
 import static com.sparta26.baemin.order.entity.QOrder.order;
-import static com.sparta26.baemin.orderproduct.entity.QOrderProduct.orderProduct;
-import static com.sparta26.baemin.product.entity.QProduct.product;
-import static com.sparta26.baemin.store.entity.QStore.store;
+import static com.sparta26.baemin.payment.entity.QPayment.payment;
 
 @Repository
-public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
+public class PaymentRepositoryCustomImpl implements  PaymentRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
-    public OrderRepositoryCustomImpl(EntityManager em) {
-        queryFactory = new JPAQueryFactory(em);
+
+    public PaymentRepositoryCustomImpl(EntityManager em) {
+        this.queryFactory = new JPAQueryFactory(em);
     }
     @Override
-    public Page<Order> getOrdersByRole(
-            String status, String search, String role, String email, Pageable pageable
+    public Page<Payment> getPaymentsByRole(
+            LocalDate startDate, LocalDate endDate, Pageable pageable,
+            String email, String role
     ) {
 
         List<OrderSpecifier<?>> orders = getAllOrderSpecifiers(pageable);
 
-        JPAQuery<Order> query = queryFactory
-                .selectFrom(order)
-                .join(order.store, store)
-                .leftJoin(order.orderProducts, orderProduct)
-                .leftJoin(orderProduct.product, product);
-
-        // 조건부 필터
-        if (StringUtils.hasText(search) && !search.trim().isEmpty()) {
-            query
-                    .where(
-                            store.name.containsIgnoreCase(search)
-                                    .or(product.name.containsIgnoreCase(search))
-                    );
-        }
-
-        query.where(
+        JPAQuery<Payment> query = queryFactory
+                .selectFrom(payment)
+                .where(
                         userCheck(role, email),
-                        statusEq(status),
-                        order.isPublic.eq(true)
+                        dateBetween(startDate, endDate),
+                        payment.isPublic.eq(true)
                 )
                 .orderBy(orders.toArray(new OrderSpecifier[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        List<Order> orderList = query.fetch();
+        List<Payment> paymentList = query.fetch();
 
-        return new PageImpl<>(orderList, pageable, orderList.size());
+        return new PageImpl<>(paymentList, pageable, paymentList.size());
     }
 
     private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
@@ -85,8 +73,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                         orders.set(1, new OrderSpecifier<>(direction, order.updatedAt));
                 default ->
                         orders.add(new OrderSpecifier<>(
-                            direction,
-                            Expressions.stringPath(sortOrder.getProperty())
+                                direction,
+                                Expressions.stringPath(sortOrder.getProperty())
                         ));
             }
         }
@@ -96,15 +84,33 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
 
     private BooleanExpression userCheck(String role, String email) {
 
-        // 권한에 따라 조건 설정
+        // CUSTOMER : ONLINE 결제 , OWNER : OFFLINE 결제
         return switch (UserRole.fromString(role)) {
-            case ROLE_CUSTOMER -> order.createdBy.eq(email);
-            case ROLE_OWNER -> order.store.createdBy.eq(email);
-            case ROLE_MANAGER, ROLE_MASTER -> null;
+            case ROLE_CUSTOMER, ROLE_OWNER ->
+                    payment.createdBy.eq(email);
+            case ROLE_MANAGER, ROLE_MASTER ->
+                    null;
         };
     }
 
-    private BooleanExpression statusEq(String status) {
-        return status != null ? order.status.eq(OrderStatus.fromString(status)) : null;
+    private BooleanExpression dateBetween(LocalDate startDate, LocalDate endDate) {
+
+        BooleanExpression condition = payment.isNotNull();
+
+        if (startDate != null) {
+            condition = condition.and(
+                    payment.createdAt.goe(LocalDateTime.of(startDate, LocalTime.MIDNIGHT))
+                            .or(payment.updatedAt.goe(LocalDateTime.of(startDate, LocalTime.MIDNIGHT)))
+            );
+        }
+
+        if (endDate != null) {
+            condition = condition.and(
+                    payment.createdAt.loe(LocalDateTime.of(endDate, LocalTime.MAX))
+                            .or(payment.updatedAt.loe(LocalDateTime.of(endDate, LocalTime.MAX)))
+            );
+        }
+
+        return condition;
     }
 }

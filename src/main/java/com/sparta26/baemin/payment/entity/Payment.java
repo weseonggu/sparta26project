@@ -4,6 +4,7 @@ import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -24,7 +25,7 @@ public class Payment extends AuditEntity {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status; // COMPLETE, CANCEL
+    private PaymentStatus status;
 
     @Column(name = "card_number")
     private String cardNumber;
@@ -32,17 +33,37 @@ public class Payment extends AuditEntity {
     @Column(name = "pay_date")
     private LocalDateTime payDate;
 
+    @Column(name = "total_price", nullable = false)
+    private Integer totalPrice;
+
     @OneToOne(mappedBy = "payment")
     private Order order;
 
-    public Payment(PaymentStatus status, String cardNumber, LocalDateTime payDate, String username) {
+    public static Payment createPayment(PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
+        return new Payment(status, cardNumber, payDate, totalPrice);
+    }
+
+    public Payment(PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
         this.status = status;
         this.cardNumber = cardNumber;
         this.payDate = payDate;
-        super.addCreatedBy(username);
+        this.totalPrice = totalPrice;
+    }
+
+    @Builder
+    public Payment(UUID id, PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
+        this.id = id;
+        this.status = status;
+        this.cardNumber = cardNumber;
+        this.payDate = payDate;
+        this.totalPrice = totalPrice;
     }
 
     public void addOrder(Order order) {
         this.order = order;
+    }
+
+    public void updatePaymentStatus(PaymentStatus status) {
+        this.status = status;
     }
 }
