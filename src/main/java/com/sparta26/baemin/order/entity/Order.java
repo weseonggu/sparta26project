@@ -2,7 +2,6 @@ package com.sparta26.baemin.order.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.member.entity.Member;
-import com.sparta26.baemin.orderproduct.entity.OrderProduct;
 import com.sparta26.baemin.payment.entity.Payment;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;

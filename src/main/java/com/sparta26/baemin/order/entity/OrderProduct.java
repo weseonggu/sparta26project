@@ -1,7 +1,6 @@
-package com.sparta26.baemin.orderproduct.entity;
+package com.sparta26.baemin.order.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
-import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

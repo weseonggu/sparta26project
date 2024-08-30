@@ -1,6 +1,6 @@
-package com.sparta26.baemin.orderproduct.repository;
+package com.sparta26.baemin.order.repository;
 
-import com.sparta26.baemin.orderproduct.entity.OrderProduct;
+import com.sparta26.baemin.order.entity.OrderProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
