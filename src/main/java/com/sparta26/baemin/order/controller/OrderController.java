@@ -89,7 +89,7 @@ public class OrderController {
     }
 
     /**
-     * 주문 삭제
+     * 주문 수정
      * <p>권한에 따른 데이터 수정의 범위가 다름<p/>
      *
      * @param request 수정하려는 내용
@@ -109,13 +109,13 @@ public class OrderController {
                         request,
                         orderId,
                         customUserDetails.getId(),
-                        customUserDetails.getUsername(),
                         customUserDetails.getForContext().getRole()
                 )
         );
     }
 
     /**
+     * 주문 삭제
      * 'ROLE_MASTER' 권한만 데이터 삭제(숨김처리)가능
      *
      * @param orderId 숨김처리하려는 주문의 ID

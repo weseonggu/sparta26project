@@ -2,13 +2,12 @@ package com.sparta26.baemin.order.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta26.baemin.exception.exceptionsdefined.UnauthorizedException;
 import com.sparta26.baemin.member.entity.UserRole;
 import com.sparta26.baemin.order.entity.Order;
 import com.sparta26.baemin.order.entity.OrderStatus;
-import com.sparta26.baemin.order.entity.QOrder;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -71,20 +70,24 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
-        List<OrderSpecifier<?>> orders = new ArrayList<>();
 
-        if (pageable.getSort() != null) {
-            for (Sort.Order sortOrder : pageable.getSort()) {
-                com.querydsl.core.types.Order direction =
-                        sortOrder.isAscending() ? ASC : DESC;
-                switch (sortOrder.getProperty()) {
-                    case "createdAt" ->
-                            orders.add(new OrderSpecifier<>(direction, order.createdAt));
-                    case "updatedAt" ->
-                            orders.add(new OrderSpecifier<>(direction, order.updatedAt));
-                    default -> {
-                    }
-                }
+        List<OrderSpecifier<?>> orders = new ArrayList<>();
+        orders.add(new OrderSpecifier<>(DESC, order.createdAt));
+        orders.add(new OrderSpecifier<>(DESC, order.updatedAt));
+
+        for (Sort.Order sortOrder : pageable.getSort()) {
+            com.querydsl.core.types.Order direction =
+                    sortOrder.isAscending() ? ASC : DESC;
+            switch (sortOrder.getProperty()) {
+                case "createdAt" ->
+                        orders.set(0, new OrderSpecifier<>(direction, order.createdAt));
+                case "updatedAt" ->
+                        orders.set(1, new OrderSpecifier<>(direction, order.updatedAt));
+                default ->
+                        orders.add(new OrderSpecifier<>(
+                            direction,
+                            Expressions.stringPath(sortOrder.getProperty())
+                        ));
             }
         }
 
@@ -92,19 +95,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     }
 
     private BooleanExpression userCheck(String role, String email) {
-        QOrder order = QOrder.order;
 
         // 권한에 따라 조건 설정
-        if (UserRole.ROLE_CUSTOMER.name().equals(role)) {
-            return order.createdBy.eq(email);
-        } else if (UserRole.ROLE_OWNER.name().equals(role)) {
-            return order.store.createdBy.eq(email);
-        } else if (UserRole.ROLE_MANAGER.name().equals(role) ||
-                UserRole.ROLE_MASTER.name().equals(role)) {
-            return null;
-        } else {
-            throw new UnauthorizedException("Required permissions to access this resource");
-        }
+        return switch (UserRole.fromString(role)) {
+            case ROLE_CUSTOMER -> order.createdBy.eq(email);
+            case ROLE_OWNER -> order.store.createdBy.eq(email);
+            case ROLE_MANAGER, ROLE_MASTER -> null;
+        };
     }
 
     private BooleanExpression statusEq(String status) {

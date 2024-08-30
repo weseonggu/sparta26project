@@ -32,7 +32,7 @@ public class Order extends AuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type")
-    private OrderType orderType; // ONLINE, OFFLINE
+    private OrderType orderType;
 
     @Column(name = "order_request")
     private String orderRequest;
@@ -61,7 +61,6 @@ public class Order extends AuditEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    //== 생성 메서드 ==//
     public static Order createOrder(String address, OrderType orderType, String orderRequest, String deliveryRequest, Member member, Store store, String email, OrderStatus status, OrderProduct... orderProducts) {
         return new Order(address, orderType, orderRequest, deliveryRequest, member, store, email, status, orderProducts);
     }
@@ -82,7 +81,6 @@ public class Order extends AuditEntity {
             addOrderProduct(orderProduct);
         }
         this.totalPrice = getTotalPrice();
-        super.addCreatedBy(email);
     }
 
     public void addMember(Member member) {
@@ -102,32 +100,30 @@ public class Order extends AuditEntity {
 
     public void addPayment(Payment payment) {
         this.payment = payment;
+        this.status = OrderStatus.CONFIRM;
         payment.addOrder(this);
     }
-    // 전체 주문 가격 조회
 
     public int getTotalPrice() {
         return orderProducts.stream().mapToInt(OrderProduct::getTotalPrice).sum();
     }
 
-    public void updateStatus(OrderStatus status, String email) {
+    public void updateStatus(OrderStatus status) {
         this.status = status;
-        this.updateBy(email);
     }
 
-    private void updateCommonFields(String address, String orderRequest, String deliveryRequest, String email) {
+    private void updateCommonFields(String address, String orderRequest, String deliveryRequest) {
         this.address = address;
         this.orderRequest = orderRequest;
         this.deliveryRequest = deliveryRequest;
-        this.updateBy(email);
     }
 
-    public void updateOrderByCustomer(String address, String orderRequest, String deliveryRequest, String email) {
-        updateCommonFields(address, orderRequest, deliveryRequest, email);
+    public void updateOrderByCustomer(String address, String orderRequest, String deliveryRequest) {
+        updateCommonFields(address, orderRequest, deliveryRequest);
     }
 
-    public void updateOrderByMaster(String address, String orderRequest, String deliveryRequest, String email, OrderStatus status) {
-        updateCommonFields(address, orderRequest, deliveryRequest, email);
+    public void updateOrderByMaster(String address, String orderRequest, String deliveryRequest, OrderStatus status) {
+        updateCommonFields(address, orderRequest, deliveryRequest);
         this.status = status;
     }
 }
