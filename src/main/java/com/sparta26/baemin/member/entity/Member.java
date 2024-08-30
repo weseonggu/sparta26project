@@ -55,6 +55,10 @@ public class Member extends AuditEntity {
         super.addCreatedBy(email);
     }
 
+    public Member(Long memberId) {
+        this.id=memberId;
+    }
+
 
     /**
      * 생성 메서드
