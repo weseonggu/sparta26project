@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OrderMemberClientImpl implements OrderMemberClient {
+public class MemberServiceClientImpl implements MemberServiceClient {
 
     Member customer;
 
