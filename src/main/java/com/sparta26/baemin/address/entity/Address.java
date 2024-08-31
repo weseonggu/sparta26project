@@ -15,7 +15,7 @@ public class Address extends AuditEntity {
 
     @Id
     @Column(name = "zip_code")
-    private Long zipCode;
+    private String zipCode;
 
     @Column(name = "road_address", nullable = false)
     private String roadAddress;
@@ -23,7 +23,7 @@ public class Address extends AuditEntity {
     @Column(name = "road_address_english", nullable = false)
     private String roadAddressEnglish;
 
-    public Address(Long zipCode, String roadAddress, String roadAddressEnglish, String username) {
+    public Address(String zipCode, String roadAddress, String roadAddressEnglish, String username) {
         this.zipCode = zipCode;
         this.roadAddress = roadAddress;
         this.roadAddressEnglish = roadAddressEnglish;

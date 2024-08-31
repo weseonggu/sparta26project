@@ -44,7 +44,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                        member.isPublic
                ))
                .from(member)
-               .where(emailEq(condition.getEmail()));
+               .where(emailEq(condition.getEmail()), isPublicEq(condition.getIsPublic()));
        Sort sort = pageable.getSort();
         if (sort.isSorted()) {
             sort.forEach(order -> {
@@ -77,5 +77,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     private BooleanExpression emailEq(String email) {
         return hasText(email) ? member.email.eq(email) : null;
+    }
+    private BooleanExpression isPublicEq(boolean isPublic) {
+        return member.isPublic.eq(isPublic);
     }
 }

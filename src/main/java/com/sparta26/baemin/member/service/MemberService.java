@@ -1,9 +1,6 @@
 package com.sparta26.baemin.member.service;
 
-import com.sparta26.baemin.dto.member.RequestLogInDto;
-import com.sparta26.baemin.dto.member.RequestSearchMemberDto;
-import com.sparta26.baemin.dto.member.RequestSignUpDto;
-import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
+import com.sparta26.baemin.dto.member.*;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
 import com.sparta26.baemin.jwt.JWTUtil;
 import com.sparta26.baemin.member.entity.Member;
@@ -57,7 +54,7 @@ public class MemberService {
      * @return
      */
     @Transactional(readOnly = true, timeout = 2)
-    public String attemptLogIn(RequestLogInDto member) {
+    public TokenAndMemberInfoDto attemptLogIn(RequestLogInDto member) {
         // DB에서 사용장 정보 가져 오기
         ResponseMemberInfoDto db_member = memberCacheService.getMemberInfo(member.getEmail());
         // 비번 비교 로직, 토큰 생성
@@ -67,7 +64,7 @@ public class MemberService {
         }else{
             throw new LoginFailException("이메일이나 비밀번호가 틀렸습니다.");
         }
-        return token;
+        return new TokenAndMemberInfoDto(token, db_member);
     }
 
     /**

@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RequestSearchMemberDto {
     private String email;
+    private Boolean isPublic;
 }
