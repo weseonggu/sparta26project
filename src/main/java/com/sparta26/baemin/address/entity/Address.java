@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "p_ADDRESS")
@@ -14,6 +17,10 @@ import lombok.NoArgsConstructor;
 public class Address extends AuditEntity {
 
     @Id
+    @UuidGenerator
+    @Column(name = "addrerss_id")
+    private UUID id;
+
     @Column(name = "zip_code")
     private String zipCode;
 
