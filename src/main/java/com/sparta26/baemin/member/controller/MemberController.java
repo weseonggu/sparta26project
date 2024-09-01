@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sparta26.baemin.dto.member.*;
 import com.sparta26.baemin.jwt.CustomUserDetails;
-import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.service.MemberCacheService;
 import com.sparta26.baemin.member.service.MemberService;
 import jakarta.validation.Valid;
