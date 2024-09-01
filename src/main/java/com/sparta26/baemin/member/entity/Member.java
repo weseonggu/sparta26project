@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 
 @Entity
 @Table(name = "p_MEMBERS")
@@ -45,7 +44,8 @@ public class Member extends AuditEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
     @Builder
-    public Member(String email, String password, String username, String nickname, UserRole role) {
+    public Member(Long id, String email, String password, String username, String nickname, UserRole role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.username = username;
@@ -54,17 +54,28 @@ public class Member extends AuditEntity {
 
         super.addCreatedBy(email);
     }
-
-    public Member(Long memberId) {
-        this.id=memberId;
+    public static Member createMember(String email, String password, String username, String nickname, UserRole role) {
+        return Member.builder()
+                .email(email)
+                .password(password)
+                .username(username)
+                .nickname(nickname)
+                .role(role)
+                .build();
     }
 
-
-    /**
-     * 생성 메서드
-     */
-    public static Member createMember(String email, String password, String username, String nickname, UserRole role) {
-        return new Member(email, password, username, nickname, role);
+    public static Member createMemberWithId(Long id, String email, String password, String username, String nickname, UserRole role) {
+        return Member.builder()
+                .id(id)
+                .email(email)
+                .password(password)
+                .username(username)
+                .nickname(nickname)
+                .role(role)
+                .build();
+    }
+    public Member(Long memberId) {
+        this.id=memberId;
     }
 
     public void addAddress(Address... address) {
@@ -76,5 +87,4 @@ public class Member extends AuditEntity {
         this.nickname = nickname;
         this.username = username;
     }
-
 }
