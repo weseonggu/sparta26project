@@ -3,12 +3,11 @@ package com.sparta26.baemin.exception;
 import com.sparta26.baemin.common.util.CurrentTime;
 import com.sparta26.baemin.dto.error.ErrorResponse;
 import com.sparta26.baemin.dto.response.FailMessage;
-import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
+import com.sparta26.baemin.exception.exceptionsdefined.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
-import com.sparta26.baemin.exception.exceptionsdefined.*;
 import io.lettuce.core.RedisCommandTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -228,4 +227,19 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(DeliveryZoneNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(DeliveryZoneNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(CategoryNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
 }

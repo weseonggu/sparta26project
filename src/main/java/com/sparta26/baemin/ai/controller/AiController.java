@@ -3,8 +3,9 @@ package com.sparta26.baemin.ai.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta26.baemin.ai.service.AiService;
 import com.sparta26.baemin.dto.ai.RequestAiDto;
+import com.sparta26.baemin.dto.ai.RequestSearchAiDto;
 import com.sparta26.baemin.dto.ai.ResponseAiAnswerDto;
-import com.sparta26.baemin.dto.ai.ResponseAiPageDto;
+import com.sparta26.baemin.dto.ai.ResponseSearchAiDto;
 import com.sparta26.baemin.exception.exceptionsdefined.ForbiddenAccessException;
 import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.jwt.ForContext;
@@ -50,8 +51,10 @@ public class AiController {
      * Ai 질답 리스트 검색, 관리자 가능
      */
     @GetMapping("/questions")
-    public ResponseEntity<?> questionList(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<?> questionList(RequestSearchAiDto condition,
+                                          @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                           Pageable pageable) {
+
         log.info("Ai 질문 리스트 검색 시도 중 : {}", customUserDetails.getForContext());
         ForContext context = customUserDetails.getForContext();
         String role = context.getRole();
@@ -61,7 +64,7 @@ public class AiController {
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        Page<ResponseAiPageDto> responseAiPageDtos = aiService.findAll(pageable);
+        Page<ResponseSearchAiDto> responseAiPageDtos = aiService.findAll(pageable, condition);
         log.info("Ai 질문 리스트 검색 완료");
         return ResponseEntity.ok(responseAiPageDtos);
     }

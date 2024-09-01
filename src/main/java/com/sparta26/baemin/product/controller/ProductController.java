@@ -79,6 +79,7 @@ public class ProductController {
 
     /**
      * 개별 상품 조회
+     *
      * @param productId
      * @return
      */
@@ -94,6 +95,7 @@ public class ProductController {
 
     /**
      * 전체 상품 조회
+     *
      * @param request
      * @param pageable
      * @return
@@ -111,6 +113,7 @@ public class ProductController {
 
     /**
      * 개별 상품 삭제 | 가게 주인, 관리자
+     *
      * @param productId
      * @param customUserDetails
      * @return
@@ -120,7 +123,7 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable UUID productId,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("상품 삭제 시도 중 | productId = {}, memberId = {}", productId, customUserDetails.getForContext().getId());
-        
+
         ForContext context = customUserDetails.getForContext();
         String email = context.getEmail();
         String role = context.getRole();
@@ -130,5 +133,66 @@ public class ProductController {
         return ResponseEntity.ok("삭제 완료");
     }
 
+    /**
+     * 상품 활성화 | 가게 주인
+     *
+     * @param customUserDetails
+     * @param productId
+     * @return
+     */
+    @PostMapping("/products/available/{productId}")
+    @PreAuthorize("isAuthenticated() && hasRole('ROLE_OWNER')")
+    public ResponseEntity<?> availableProduct(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                              @PathVariable UUID productId) {
+        log.info("상품 활성화 시도 중 | productId = {}, email = {}", productId, customUserDetails.getForContext().getEmail());
 
+        ForContext context = customUserDetails.getForContext();
+        String email = context.getEmail();
+
+        String result = productService.availableProduct(productId, email);
+        log.info("상품 활성화 완료");
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 상품 비활성화 | 가게 주인
+     *
+     * @param customUserDetails
+     * @param productId
+     * @return
+     */
+    @PostMapping("/products/unavailable/{productId}")
+    @PreAuthorize("isAuthenticated() && hasRole('ROLE_OWNER')")
+    public ResponseEntity<?> unavailableProduct(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                @PathVariable UUID productId) {
+        log.info("상품 비활성화 시도 중 | productId = {}, email = {}", productId, customUserDetails.getForContext().getEmail());
+
+        ForContext context = customUserDetails.getForContext();
+        String email = context.getEmail();
+
+        String result = productService.unavailableProduct(productId, email);
+        log.info("상품 비활성화 완료");
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 상품 수량 증가 | 가게 주인
+     * @param stock
+     * @param productId
+     * @param customUserDetails
+     * @return
+     */
+    @PostMapping("/products/stock/{productId}")
+    @PreAuthorize("isAuthenticated() && hasRole('ROLE_OWNER')")
+    public ResponseEntity<?> addStockQuantity(@RequestParam(value = "stock") Integer stock,
+                                              @PathVariable UUID productId,
+                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("상품 수량 증가 시도 중 | productId = {}, stock = {}, memberId = {}", productId, stock, customUserDetails.getForContext().getId());
+        ForContext context = customUserDetails.getForContext();
+        String email = context.getEmail();
+
+        String result = productService.addStockQuantity(stock, productId, email);
+        log.info("상품 수량 증가 완료");
+        return ResponseEntity.ok(result);
+    }
 }

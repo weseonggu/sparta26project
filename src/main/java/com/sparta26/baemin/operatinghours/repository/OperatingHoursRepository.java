@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface OperatingHoursRepository extends JpaRepository<OperatingHours, UUID> {
+public interface OperatingHoursRepository extends JpaRepository<OperatingHours, UUID>, OperatingHoursRepositoryCustom {
 
     @Query("select o from OperatingHours o where o.store.id = :id and o.openDays = :openDays and o.isPublic = true")
     OperatingHours findByStoreIdAndOpenDays(@Param("id") UUID id,@Param("openDays") String openDays);
@@ -27,4 +27,7 @@ public interface OperatingHoursRepository extends JpaRepository<OperatingHours, 
     @Modifying(clearAutomatically = true)
     @Query("update OperatingHours o set o.isPublic = false, o.deletedBy = :email where o.store.id = :id")
     void deleteByStoreId(@Param("id") UUID uuid,@Param("email") String email);
+
+    @Query("select o from OperatingHours o where o.store.id = :id and o.openDays <> :openDays and o.isPublic = true")
+    List<OperatingHours> findWithOutByStoreIdAndOpenDays(@Param("id") UUID id,@Param("openDays") String openDays);
 }
