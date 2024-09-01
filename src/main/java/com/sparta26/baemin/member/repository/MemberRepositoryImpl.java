@@ -78,7 +78,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private BooleanExpression emailEq(String email) {
         return hasText(email) ? member.email.eq(email) : null;
     }
-    private BooleanExpression isPublicEq(boolean isPublic) {
-        return member.isPublic.eq(isPublic);
+    private BooleanExpression isPublicEq(Boolean isPublic) {
+        return isPublic != null ? member.isPublic.eq(isPublic) : null;
     }
 }
