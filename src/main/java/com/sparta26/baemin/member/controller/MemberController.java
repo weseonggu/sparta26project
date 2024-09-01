@@ -32,18 +32,18 @@ public class MemberController {
     /**
      * 회원 가입
      * @param member: 이름, 닉네임, 이메일, 비번, 권한(이상한 권한 입력시 가입 못함)
-     * @return
+     * @return 가입정보
      */
     @PostMapping("/v1/signUp")
     public ResponseEntity<?> signUp(@Valid @RequestBody RequestSignUpDto member) {
         memberService.createMember(member);
-        return new ResponseEntity<String>("회원가입에 성공했습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.OK);
     }
 
     /**
      * 로그인 요청
      * @param member 이메일, 비밀번호
-     * @return
+     * @return 로그인 정보
      */
     @PostMapping("/v1/logIn")
     public ResponseEntity<?> logIn(@Valid @RequestBody RequestLogInDto member) {
@@ -59,13 +59,13 @@ public class MemberController {
         );
 
         objectMapper.setFilterProvider(filters);
-        return new ResponseEntity<ResponseMemberInfoDto>(dto.getMemberInfo(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(dto.getMemberInfo(), headers, HttpStatus.OK);
     }
 
     /**
      * 사용자 정보 조회 사용자일 경우 본인만 가능하고 매니저일경우 타인의 정보 조회 가능
      * @param email  사용자 이메일
-     * @return
+     * @return 로그인한 자기 정보
      */
     @GetMapping("/v1/members/myinfo/{email}")
     @PreAuthorize("(isAuthenticated() && principal.username == #email)")
@@ -77,13 +77,13 @@ public class MemberController {
                 SimpleBeanPropertyFilter.serializeAllExcept("password")
         );
         objectMapper.setFilterProvider(filters);
-        return new ResponseEntity<ResponseMemberInfoDto> (memberInfo,HttpStatus.OK);
+        return new ResponseEntity<>(memberInfo, HttpStatus.OK);
     }
 
     /**
      * 페이징을 사용한 사용자 전체 조회 매니저, 마스터만 가능
-     * @param pageable
-     * @return
+     * @param pageable 페이징할 데이터
+     * @return 매니저나 마스터가 사용자 정보 조회 여러 있기 때문에 페이징 데이터 리턴
      */
     @GetMapping("/v1/members/page")
     @PreAuthorize("isAuthenticated() && (hasAuthority('ROLE_MANAGER')|| hasAuthority('ROLE_MASTER'))")
@@ -99,21 +99,29 @@ public class MemberController {
 
     /**
      * 개별 사용자 정보 수정 사용자의 경우 본인만 가능, 매니저의 경우는 타인도 가능
-     * @param requestSignUpDto
-     * @param userDetails
-     * @return
+     * @param requestSignUpDto 바꿀데이터
+     * @param userDetails 로그인한 사용자 정보
+     * @return 변경여부
      */
     @PatchMapping("/v1/members/update")
     public ResponseEntity<String> updateMemberInfo(@RequestBody RequestSignUpDto requestSignUpDto, @AuthenticationPrincipal CustomUserDetails userDetails){
         memberCacheService.updateMemberInfo(requestSignUpDto, userDetails);
-        return new ResponseEntity<String>("변경했습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("변경했습니다.", HttpStatus.OK);
     }
     
     // 맴버 삭제: 삭제가 아닌 정보 공개 여부를 false로 변경
+
+    /**
+     * 사용자 삭제 일반 사용자는 자기만 매니저와 마스터는 타인까지 제거가 가능
+     * @param email 이메일
+     * @param userDetails 로그인 정보
+     * @return 탈퇴 여부
+     */
     @DeleteMapping("/v1/members/delete/{email}")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER', 'OWN', 'MASTER','OWNER')")
     public ResponseEntity<String> deleteMember(@PathVariable("email") String email, @AuthenticationPrincipal CustomUserDetails userDetails){
         memberCacheService.deleteMember(email, userDetails);
-        return new ResponseEntity<String>("탈퇴되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("탈퇴되었습니다.", HttpStatus.OK);
     }
 
 }

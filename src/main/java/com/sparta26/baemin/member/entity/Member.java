@@ -3,6 +3,7 @@ package com.sparta26.baemin.member.entity;
 import com.sparta26.baemin.address.entity.Address;
 import com.sparta26.baemin.common.entity.AuditEntity;
 import com.sparta26.baemin.order.entity.Order;
+import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,6 +44,11 @@ public class Member extends AuditEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
     @Builder
     public Member(Long id, String email, String password, String username, String nickname, UserRole role) {
         this.id = id;
