@@ -3,12 +3,11 @@ package com.sparta26.baemin.exception;
 import com.sparta26.baemin.common.util.CurrentTime;
 import com.sparta26.baemin.dto.error.ErrorResponse;
 import com.sparta26.baemin.dto.response.FailMessage;
-import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
+import com.sparta26.baemin.exception.exceptionsdefined.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
-import com.sparta26.baemin.exception.exceptionsdefined.*;
 import io.lettuce.core.RedisCommandTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +70,24 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler(RedisCommandTimeoutException.class)
     public final ResponseEntity<FailMessage> handeleRedisCommandTimeoutException(Exception ex, WebRequest request) throws Exception{
         FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of("잠시후 다시 시도해주세요"));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 타인의 데이터에 접근시
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(NoAccessToOtherPeopleData.class)
+    public final ResponseEntity<FailMessage> handeleNoAccessToOtherPeopleDataException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(AlreadyDeletedException.class)
+    public final ResponseEntity<FailMessage> handeleAlreadyDeletedExceptionException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
         return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
     }
 
@@ -200,4 +217,19 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Unauthorized", ex.getMessage(),stackTrace);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
+    @ExceptionHandler(DeliveryZoneNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(DeliveryZoneNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerSessionNotFound(CategoryNotFoundException ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
 }

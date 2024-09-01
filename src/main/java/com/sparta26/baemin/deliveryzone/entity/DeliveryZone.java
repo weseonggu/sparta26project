@@ -1,6 +1,7 @@
 package com.sparta26.baemin.deliveryzone.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
+import com.sparta26.baemin.dto.deliveryzone.RequestDeliveryDto;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,19 +30,18 @@ public class DeliveryZone extends AuditEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    public DeliveryZone(String name, Store store, String username) {
+    public DeliveryZone(String name, Store store) {
         this.name = name;
         if (store != null) {
             addStore(store);
         }
-        super.addCreatedBy(username);
     }
 
     /**
      * 생성 메서드
      */
-    public static DeliveryZone createDeliveryZone(String name, Store store, String username) {
-        return new DeliveryZone(name, store, username);
+    public static DeliveryZone createDeliveryZone(String name, Store store) {
+        return new DeliveryZone(name, store);
     }
 
     public void addStore(Store store) {
@@ -57,4 +57,10 @@ public class DeliveryZone extends AuditEntity {
     }
 
 
+    public DeliveryZone update(RequestDeliveryDto request) {
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
+        return this;
+    }
 }

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.sparta26.baemin.product.entity.QProduct.product;
 import static org.springframework.util.StringUtils.hasText;
@@ -38,10 +37,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                         product.stockQuantity,
                         product.category,
                         product.imageUrl,
-                        product.isAvailable
+                        product.isAvailable,
+                        product.createdAt,
+                        product.updatedAt,
+                        product.store.id
                 ))
                 .from(product)
-                .where(nameEq(condition.getName()),
+                .where(nameContains(condition.getName()),
                         product.isPublic.eq(true));
 
         Sort sort = pageable.getSort();
@@ -54,8 +56,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                     query.orderBy(direction.isAscending() ? product.createdAt.asc() : product.createdAt.desc());
                 } else if ("updatedAt".equals(property)) {
                     query.orderBy(direction.isAscending() ? product.updatedAt.asc() : product.updatedAt.desc());
-                } else {
-                    query.orderBy(direction.isAscending() ? product.createdAt.asc() : product.createdAt.desc());
                 }
             });
         }
@@ -68,16 +68,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(product.count())
                 .from(product)
-                .where(nameEq(condition.getName()));
+                .where(nameContains(condition.getName()),
+                        product.isPublic.eq(true));
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
-    private BooleanExpression storeIdEq(UUID storeId) {
-        return hasText(storeId.toString()) ? product.id.eq(storeId) : null;
-    }
-
-    private BooleanExpression nameEq(String name) {
-        return hasText(name) ? product.name.eq(name) : null;
+    private BooleanExpression nameContains(String name) {
+        return hasText(name) ? product.name.contains(name) : null;
     }
 }

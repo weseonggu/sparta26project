@@ -99,6 +99,9 @@ public class Product extends AuditEntity {
      * @return stock
      */
     public Integer addStock(Integer quantity) {
+        if (quantity != null && quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
         this.stockQuantity += quantity;
         return this.stockQuantity;
     }
@@ -122,7 +125,7 @@ public class Product extends AuditEntity {
         this.isAvailable = false;
     }
 
-    public Product update(RequestProductWithoutStockDto request, String email) {
+    public Product update(RequestProductWithoutStockDto request) {
         if (request.getName() != null) {
             this.name = request.getName();
         }
@@ -138,7 +141,14 @@ public class Product extends AuditEntity {
         if (request.getImageUrl() != null) {
             this.imageUrl = request.getImageUrl();
         }
-        addUpdatedBy(email);
         return this;
+    }
+
+    public void changeIsAvailable(boolean isAvailable) {
+        if (isAvailable) {
+            this.isAvailable = true;
+        } else {
+            this.isAvailable = false;
+        }
     }
 }

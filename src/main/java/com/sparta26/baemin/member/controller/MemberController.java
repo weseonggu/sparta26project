@@ -3,9 +3,7 @@ package com.sparta26.baemin.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.sparta26.baemin.dto.member.RequestLogInDto;
-import com.sparta26.baemin.dto.member.RequestSignUpDto;
-import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
+import com.sparta26.baemin.dto.member.*;
 import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.service.MemberCacheService;
@@ -15,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,10 +48,19 @@ public class MemberController {
      */
     @PostMapping("/v1/logIn")
     public ResponseEntity<?> logIn(@Valid @RequestBody RequestLogInDto member) {
-        String token = memberService.attemptLogIn(member);
+        TokenAndMemberInfoDto dto = memberService.attemptLogIn(member);
+        // 토큰 헤더에 넣기
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", token);
-        return new ResponseEntity<String>("로그인 성공했습니다.", headers, HttpStatus.OK);
+        headers.add("Authorization", dto.getToken());
+
+        // 로그인 정보 필터
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
+                "MemberInfoFilter",
+                SimpleBeanPropertyFilter.filterOutAllExcept("id","email", "username","nickname", "role")
+        );
+
+        objectMapper.setFilterProvider(filters);
+        return new ResponseEntity<ResponseMemberInfoDto>(dto.getMemberInfo(), headers, HttpStatus.OK);
     }
 
     /**
@@ -80,14 +88,14 @@ public class MemberController {
      */
     @GetMapping("/v1/members/page")
     @PreAuthorize("isAuthenticated() && (hasAuthority('ROLE_MANAGER')|| hasAuthority('ROLE_MASTER'))")
-    public Page<ResponseMemberInfoDto> getMember(Pageable pageable){
-        Page<Member> page = memberService.memberInfoInPage(pageable);
+    public Page<ResponseMemberInfoDto> getMember(@PageableDefault(size = 10) Pageable pageable, RequestSearchMemberDto request){
+        Page<ResponseMemberInfoDto> page = memberService.memberInfoInPage(pageable, request);
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
                 "MemberInfoFilter",
                 SimpleBeanPropertyFilter.serializeAllExcept("password")
         );
         objectMapper.setFilterProvider(filters);
-        return page.map(ResponseMemberInfoDto::new);
+        return page;
     }
 
     /**

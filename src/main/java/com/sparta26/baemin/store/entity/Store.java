@@ -64,14 +64,13 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store")
     private List<OperatingHours> operatingHours = new ArrayList<>();
 
-    public Store(String name, String description, String address, String phoneNumber, Member member, String email) {
+    public Store(String name, String description, String address, String phoneNumber, Member member) {
         this.name = name;
         this.description = description;
         this.address = address;
         this.phoneNumber = phoneNumber;
         if (member != null) {
             this.member = member;
-            super.addCreatedBy(email);
         }
     }
 
@@ -91,8 +90,8 @@ public class Store extends AuditEntity {
     /**
      * 생성 메서드
      */
-    public static Store createStore(String name, String description, String address, String phoneNumber, Member member, String email) {
-        return new Store(name, description, address, phoneNumber, member, email);
+    public static Store createStore(String name, String description, String address, String phoneNumber, Member member) {
+        return new Store(name, description, address, phoneNumber, member);
     }
 
     public static Store createStoreWithId(UUID id, String name, String description, String address, String phoneNumber, boolean isActive) {
@@ -100,8 +99,8 @@ public class Store extends AuditEntity {
     }
 
     // 활성화 상태 변경
-    public void changeActive() {
-        if (this.isActive) {
+    public void changeActive(boolean isActive) {
+        if (isActive) {
             this.isActive = false;
         }else {
             this.isActive = true;

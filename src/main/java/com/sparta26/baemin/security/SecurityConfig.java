@@ -2,6 +2,7 @@ package com.sparta26.baemin.security;
 
 import com.sparta26.baemin.jwt.JWTFilter;
 import com.sparta26.baemin.jwt.JwtAuthenticationEntryPoint;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,14 +50,27 @@ public class SecurityConfig {
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers( "/v1/signUp","/v1/logIn").permitAll()
-                .requestMatchers("/v1/test").hasRole("CUSTOMER")
-                .anyRequest().authenticated());
+                .requestMatchers("/v1/members/update", "/v1/members/delete/**").hasAnyRole("CUSTOMER","MANAGER","MASTER")
+                .requestMatchers("/v1/members/myinfo/**").hasRole("CUSTOMER")
+                .requestMatchers("/v1/members/page").hasRole("MANAGER")
+                .anyRequest().authenticated()
+        );
+
+        http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
 
+        // 권한이 없는 사용자가 접근할 때의 처리
+        http.exceptionHandling(handler -> handler
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("{\"error\": \"사용자의 권한으로는 접근이 불가합니다.\"}");
+                }));
         return http.build();
     }
 }

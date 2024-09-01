@@ -1,5 +1,6 @@
 package com.sparta26.baemin.dto.common;
 
+import com.querydsl.core.annotations.QueryProjection;
 import com.sparta26.baemin.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class AuditDto implements Serializable {
 
     private LocalDateTime createdAt;
@@ -44,5 +45,15 @@ public class AuditDto implements Serializable {
         this.deletedAt = member.getDeletedAt();
         this.deletedBy = member.getDeletedBy();
         this.isPublic = member.isPublic();
+    }
+    @QueryProjection
+    public AuditDto(LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, String updatedBy, LocalDateTime deletedAt, String deletedBy, boolean isPublic){
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+        this.deletedAt = deletedAt;
+        this.deletedBy = deletedBy;
+        this.isPublic = isPublic;
     }
 }
