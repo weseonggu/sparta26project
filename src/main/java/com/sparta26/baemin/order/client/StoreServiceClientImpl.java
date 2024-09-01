@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StoreServiceClientImpl implements StoreServiceClient {
 
-        private final StoreService storeService;
+    private final StoreService storeService;
     public Store getStoreById(String storeId) {
 
         try {

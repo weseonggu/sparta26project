@@ -206,6 +206,16 @@ public class StoreService {
     }
 
     /**
+     * 멤버 ID로 조회 | 컨트롤러 없음
+     * @param memberId
+     * @return
+     */
+    public ResponseStoreDto findByMemberId(Long memberId) {
+        Store store = storeRepository.findByMemberId(memberId).orElseThrow(() -> new StoreNotFoundException("not found store"));
+        return ResponseStoreDto.toDto(store);
+    }
+
+    /**
      * UUID 형식 검증 메서드
      * @param storeId
      * @return
