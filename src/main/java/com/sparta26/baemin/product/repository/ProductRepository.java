@@ -2,6 +2,7 @@ package com.sparta26.baemin.product.repository;
 
 import com.sparta26.baemin.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,4 +24,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, Product
 
     @Query("select p from Product p where p.store.id = :id and p.name <> :name and p.isPublic = true")
     List<Product> findDuplicatedByStoreIdAndName(@Param("id") UUID id, @Param("name") String name);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Product p set p.isPublic = false, p.deletedBy = :email, p.deletedAt = local datetime where p.store.id = :id")
+    void deleteByStoreId(@Param("id") String storeId,@Param("email") String email);
 }

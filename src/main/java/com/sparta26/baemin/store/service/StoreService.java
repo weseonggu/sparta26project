@@ -1,5 +1,7 @@
 package com.sparta26.baemin.store.service;
 
+import com.sparta26.baemin.category.repository.CategoryRepository;
+import com.sparta26.baemin.deliveryzone.repository.DeliveryZoneRepository;
 import com.sparta26.baemin.dto.store.RequestSearchStoreDto;
 import com.sparta26.baemin.dto.store.RequestStoreDto;
 import com.sparta26.baemin.dto.store.ResponseSearchStoreDto;
@@ -9,6 +11,7 @@ import com.sparta26.baemin.exception.exceptionsdefined.StoreNotFoundException;
 import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.operatinghours.repository.OperatingHoursRepository;
+import com.sparta26.baemin.product.repository.ProductRepository;
 import com.sparta26.baemin.store.entity.Store;
 import com.sparta26.baemin.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,9 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final OperatingHoursRepository operatingHoursRepository;
+    private final CategoryRepository categoryRepository;
+    private final DeliveryZoneRepository deliveryZoneRepository;
+    private final ProductRepository productRepository;
 
     /**
      * 가게 생성, 가게주인만 생성가능
@@ -182,13 +188,24 @@ public class StoreService {
             // 가게 false 변환
             if (!findStore.isPublic()) {
                 throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
-            } //else {
+            }
                 storeRepository.deleteByIdAndMemberId(UUID.fromString(storeId), memberId, email);
-//            }
 
             // 운영시간 false 변환
             if (!findStore.getOperatingHours().isEmpty()) {
                 operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
+            }
+            // 카테고리 false 변환
+            if (!findStore.getCategories().isEmpty()) {
+                categoryRepository.deleteByStoreId(storeId, email);
+            }
+            // 배달지역 false 변환
+            if (!findStore.getDeliveryZones().isEmpty()) {
+                deliveryZoneRepository.deleteByStoreId(storeId, email);
+            }
+            // 상품 false 변환
+            if (!findStore.getProducts().isEmpty()) {
+                productRepository.deleteByStoreId(storeId, email);
             }
         } else {
             Store findStore = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() -> new StoreNotFoundException("not found store"));
@@ -201,6 +218,23 @@ public class StoreService {
                 throw new IllegalArgumentException("현재 가게는 삭제되어 조회가 불가능합니다.");
             }else {
                 storeRepository.deleteById(UUID.fromString(storeId), email);
+
+                // 운영시간 false 변환
+                if (!findStore.getOperatingHours().isEmpty()) {
+                    operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
+                }
+                // 카테고리 false 변환
+                if (!findStore.getCategories().isEmpty()) {
+                    categoryRepository.deleteByStoreId(storeId, email);
+                }
+                // 배달지역 false 변환
+                if (!findStore.getDeliveryZones().isEmpty()) {
+                    deliveryZoneRepository.deleteByStoreId(storeId, email);
+                }
+                // 상품 false 변환
+                if (!findStore.getProducts().isEmpty()) {
+                    productRepository.deleteByStoreId(storeId, email);
+                }
             }
         }
     }

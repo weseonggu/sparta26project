@@ -2,6 +2,7 @@ package com.sparta26.baemin.category.repository;
 
 import com.sparta26.baemin.category.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,4 +20,9 @@ public interface CategoryRepository extends JpaRepository<Category, UUID>, Categ
 
     @Query("select c from Category c where c.store.id = :storeId and c.name <> :name and c.isPublic = true")
     List<Category> findDuplicatedByStoreIdAndName(@Param("storeId") UUID id,@Param("name") String name);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Category c set c.isPublic = false, c.deletedBy = :email, c.deletedAt = local datetime where c.store.id = :id")
+    void deleteByStoreId(@Param("id") String storeId,@Param("email") String email);
+
 }
