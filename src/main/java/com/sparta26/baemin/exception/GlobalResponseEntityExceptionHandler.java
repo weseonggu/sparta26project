@@ -179,53 +179,43 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         return stringWriter.toString();
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(MemberNotFoundException ex){
-        String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(MemberStoreLimitExceededException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(MemberStoreLimitExceededException ex){
-        String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(StoreNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(StoreNotFoundException ex){
-        String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(UuidFormatException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(UuidFormatException ex){
-        String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
     @ExceptionHandler(ForbiddenAccessException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(ForbiddenAccessException ex){
+    public ResponseEntity<ErrorResponse> handlerForbidden(ForbiddenAccessException ex){
         String stackTrace = getStackTraceAsString(ex);
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Unauthorized user", ex.getMessage(),stackTrace);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
-    @ExceptionHandler(AiNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(AiNotFoundException ex){
+    @ExceptionHandler({
+            BadRequestException.class,
+            MemberStoreLimitExceededException.class,
+            UuidFormatException.class,
+            ClientException.class
+    })
+    public ResponseEntity<ErrorResponse> handlerBadRequest(Exception ex){
         String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", ex.getMessage(),stackTrace);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerSessionNotFound(ProductNotFoundException ex){
+    @ExceptionHandler({
+            NotFoundException.class,
+            ProductNotFoundException.class,
+            AiNotFoundException.class,
+            MemberNotFoundException.class,
+            StoreNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handlerNotFound(Exception ex){
         String stackTrace = getStackTraceAsString(ex);
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Not Found", ex.getMessage(),stackTrace);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Not Found", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handlerUnauthorized(Exception ex){
+        String stackTrace = getStackTraceAsString(ex);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Unauthorized", ex.getMessage(),stackTrace);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(DeliveryZoneNotFoundException.class)

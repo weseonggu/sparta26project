@@ -1,7 +1,8 @@
 package com.sparta26.baemin.order.client;
 
+import com.sparta26.baemin.dto.member.ResponseMemberInfoDto;
 import com.sparta26.baemin.member.entity.Member;
-import com.sparta26.baemin.member.service.MemberService;
+import com.sparta26.baemin.member.service.MemberCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +10,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberServiceClientImpl implements MemberServiceClient {
 
-    Member customer;
-
-    private final MemberService memberService;
+    private final MemberCacheService memberCacheService;
     @Override
-    public Member getMemberById(Long memberId) {
-        //TODO MemberService 에서 memberId 로 사용자 정보 가져오는 메서드
-        return customer;
+    public Member getMemberByEmail(String email) {
+
+        ResponseMemberInfoDto memberInfo = memberCacheService.getMemberInfo(email);
+
+        return convertToMember(memberInfo);
+    }
+
+    private Member convertToMember(ResponseMemberInfoDto response) {
+        return Member.createMemberWithId(
+                response.getId(),
+                response.getEmail(),
+                response.getPassword(),
+                response.getUsername(),
+                response.getNickname(),
+                response.getRole()
+        );
     }
 }

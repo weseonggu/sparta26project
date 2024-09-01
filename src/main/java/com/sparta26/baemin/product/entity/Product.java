@@ -6,6 +6,7 @@ import com.sparta26.baemin.exception.exceptionsdefined.NotEnoughStockException;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -45,7 +46,9 @@ public class Product extends AuditEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    public Product(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String email, Store store) {
+    @Builder(access = AccessLevel.PROTECTED)
+    public Product(UUID id, String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String email, Store store) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -60,9 +63,29 @@ public class Product extends AuditEntity {
 
     //== 생성 메서드 ==//
     public static Product createProduct(String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl, String email, Store store) {
-        return new Product(name, description, price, stockQuantity, category, imageUrl, email, store);
+        return Product.builder()
+                .name(name)
+                .description(description)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .category(category)
+                .imageUrl(imageUrl)
+                .email(email)
+                .store(store)
+                .build();
     }
 
+    public static Product createProductWithId(UUID id, String name, String description, Integer price, Integer stockQuantity, String category, String imageUrl) {
+        return Product.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .category(category)
+                .imageUrl(imageUrl)
+                .build();
+    }
 
     public void addStore(Store store) {
         this.store = store;

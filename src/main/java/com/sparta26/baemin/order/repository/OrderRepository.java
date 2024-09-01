@@ -12,4 +12,9 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID>, OrderRepositoryCustom {
     @Query("SELECT o FROM Order o WHERE o.id = :id AND o.member.id = :memberId AND o.isPublic = true")
     Optional<Order> findByIdAndMember_IdAndIsPublic(UUID id, Long memberId);
+
+    @Query("SELECT o FROM Order o WHERE o.id = :id AND o.store.id = :storeId AND o.isPublic = true")
+    Optional<Order> findByIdAndStore_IdAndIsPublic(UUID id, UUID storeId);
+
+
 }

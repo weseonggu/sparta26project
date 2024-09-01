@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j(topic = "PaymentTopic")
 public class LoggingAspectOfJoinPayment {
     @Around("execution(* com.sparta26.baemin.payment.service.PaymentService.pay(..)) || "
-            + "execution(* com.sparta26.baemin.payment.service.PaymentService.updatePayment(..)) || "
+            + "execution(* com.sparta26.baemin.payment.service.PaymentService.cancelPay(..)) || "
             + "execution(* com.sparta26.baemin.payment.service.PaymentService.deletePayment(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

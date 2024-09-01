@@ -94,6 +94,10 @@ public class Store extends AuditEntity {
         return new Store(name, description, address, phoneNumber, member);
     }
 
+    public static Store createStoreWithId(UUID id, String name, String description, String address, String phoneNumber, boolean isActive) {
+        return new Store(id, name, description, address, phoneNumber, isActive);
+    }
+
     // 활성화 상태 변경
     public void changeActive(boolean isActive) {
         if (isActive) {
