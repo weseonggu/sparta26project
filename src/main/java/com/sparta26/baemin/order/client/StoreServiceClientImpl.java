@@ -1,14 +1,11 @@
 package com.sparta26.baemin.order.client;
 
-import com.sparta26.baemin.dto.store.ResponseFindStoreDto;
+import com.sparta26.baemin.dto.store.ResponseSearchStoreDto;
 import com.sparta26.baemin.exception.exceptionsdefined.ClientException;
-import com.sparta26.baemin.exception.exceptionsdefined.NotFoundException;
 import com.sparta26.baemin.store.entity.Store;
 import com.sparta26.baemin.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -22,19 +19,19 @@ public class StoreServiceClientImpl implements StoreServiceClient {
     public Store getStoreById(String storeId) {
 
         try {
-            Page<ResponseFindStoreDto> oneStore =
-                    storeService.findOneStore(storeId, Pageable.unpaged());
+            ResponseSearchStoreDto responseSearchStoreDto =
+                    storeService.findOneStore(UUID.fromString(storeId));
 
-            return convertToStore(oneStore.getContent().get(0));
+            return convertToStore(responseSearchStoreDto);
         } catch (IndexOutOfBoundsException e) {
             log.warn("[FAIL] getStoreById : " + storeId);
             throw new ClientException("The external service returned an error");
         }
     }
 
-    private Store convertToStore(ResponseFindStoreDto response) {
+    private Store convertToStore(ResponseSearchStoreDto response) {
         return Store.createStoreWithId(
-                UUID.fromString(response.getId()),
+                response.getStore_id(),
                 response.getName(),
                 response.getDescription(),
                 response.getAddress(),

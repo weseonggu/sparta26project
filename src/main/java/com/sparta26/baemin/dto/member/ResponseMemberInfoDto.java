@@ -5,7 +5,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import com.sparta26.baemin.dto.common.AuditDto;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.entity.UserRole;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

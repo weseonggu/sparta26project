@@ -1,6 +1,5 @@
 package com.sparta26.baemin.jwt;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
