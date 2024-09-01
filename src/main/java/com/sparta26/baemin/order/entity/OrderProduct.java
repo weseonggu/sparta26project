@@ -44,7 +44,7 @@ public class OrderProduct extends AuditEntity {
         this.product = product;
         super.addCreatedBy(email);
 
-//        product.removeStock(amount);
+        product.removeStock(amount);
     }
 
     // 주문 취소 시 상품 수량 원복 메서드
