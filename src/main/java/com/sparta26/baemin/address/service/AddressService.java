@@ -17,7 +17,9 @@ public class AddressService {
         Address address = new Address(requestAddressDto.getZipCode(),
                 requestAddressDto.getRoadAddress(),
                 requestAddressDto.getRoadAddressEnglish(),
-                userDetails.getEmail());
+                userDetails.getEmail(),
+                userDetails.getId()
+                );
         return addressRepository.save(address);
 
     }

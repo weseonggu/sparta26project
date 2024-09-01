@@ -1,6 +1,7 @@
 package com.sparta26.baemin.address.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
+import com.sparta26.baemin.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,10 +31,15 @@ public class Address extends AuditEntity {
     @Column(name = "road_address_english", nullable = false)
     private String roadAddressEnglish;
 
-    public Address(String zipCode, String roadAddress, String roadAddressEnglish, String username) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Address(String zipCode, String roadAddress, String roadAddressEnglish, String username, Long member_id) {
         this.zipCode = zipCode;
         this.roadAddress = roadAddress;
         this.roadAddressEnglish = roadAddressEnglish;
+        this.member = new Member(member_id);
         super.addCreatedBy(username);
     }
 }

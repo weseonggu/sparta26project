@@ -54,16 +54,18 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers( "/v1/signUp","/v1/logIn").permitAll()
+                .requestMatchers("/v1/members/update", "/v1/members/delete/**").hasAnyRole("CUSTOMER","MANAGER","MASTER")
                 .requestMatchers("/v1/members/myinfo/**").hasRole("CUSTOMER")
+                .requestMatchers("/v1/members/page").hasRole("MANAGER")
                 .anyRequest().authenticated()
         );
 
         http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+
         // 권한이 없는 사용자가 접근할 때의 처리
         http.exceptionHandling(handler -> handler
-                // 권한이 없는 사용자가 접근할 때의 처리
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setContentType("application/json;charset=UTF-8");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
