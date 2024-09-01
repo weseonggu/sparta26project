@@ -39,24 +39,22 @@ public class Payment extends AuditEntity {
     @OneToOne(mappedBy = "payment")
     private Order order;
 
-    public static Payment createPayment(PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
-        return new Payment(status, cardNumber, payDate, totalPrice);
-    }
-
-    public Payment(PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
-        this.status = status;
-        this.cardNumber = cardNumber;
-        this.payDate = payDate;
-        this.totalPrice = totalPrice;
-    }
-
-    @Builder
-    public Payment(UUID id, PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
+    @Builder(access = AccessLevel.PROTECTED)
+    private Payment(UUID id, PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
         this.id = id;
         this.status = status;
         this.cardNumber = cardNumber;
         this.payDate = payDate;
         this.totalPrice = totalPrice;
+    }
+
+    public static Payment createPayment(PaymentStatus status, String cardNumber, LocalDateTime payDate, Integer totalPrice) {
+        return Payment.builder()
+                .status(status)
+                .cardNumber(cardNumber)
+                .payDate(payDate)
+                .totalPrice(totalPrice)
+                .build();
     }
 
     public void addOrder(Order order) {

@@ -1,6 +1,5 @@
 package com.sparta26.baemin.payment.controller;
 
-import com.sparta26.baemin.dto.payment.RequestPaymentDto;
 import com.sparta26.baemin.dto.payment.RequestPaymentUpdateDto;
 import com.sparta26.baemin.dto.payment.ResponsePaymentInfoDto;
 import com.sparta26.baemin.exception.exceptionsdefined.NotFoundException;
@@ -25,21 +24,6 @@ import java.time.LocalDate;
 public class PaymentController {
 
     private final PaymentService paymentService;
-
-    /**
-     * 결제
-     *
-     * @param request 결제에 필요한 데이터
-     * @return {@link ResponsePaymentInfoDto} 객체
-     */
-    @PostMapping
-    public ResponseEntity<ResponsePaymentInfoDto> pay(
-            @RequestBody RequestPaymentDto request
-    ) {
-
-        return ResponseEntity.ok(
-                paymentService.pay(request));
-    }
 
     /**
      * 결제 조회
@@ -93,22 +77,26 @@ public class PaymentController {
 
     /**
      * 결제 수정
-     * <p>'ROLE_MASTER' 권한만 데이터 수정 가능<p/>
+     * <p>'ROLE_MASTER', 'ROLE_MASTER' 권한만 paymentId 로 데이터 수정 가능.
+     * 그 외 모든 권한은 주문에서 수정할 수 있음<p/>
      *
      * @param paymentId 수정하려는 결제 ID
      * @param request 수정하려는 내용
      * @return {@link ResponsePaymentInfoDto} 객체
      */
     @PatchMapping("/{paymentId}")
-    @PreAuthorize("hasAuthority('ROLE_MASTER')")
+    @PreAuthorize("hasAuthority('ROLE_MASTER') or hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<ResponsePaymentInfoDto> updatePayment(
             @PathVariable String paymentId,
             @RequestBody RequestPaymentUpdateDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return ResponseEntity.ok(
-                paymentService.updatePayment(
-                        paymentId, request.getStatus(), customUserDetails.getRole()
+                paymentService.cancelPay(
+                        paymentId,
+                        request.getStatus(),
+                        customUserDetails.getRole(),
+                        customUserDetails.getEmail()
                 ));
     }
 

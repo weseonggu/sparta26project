@@ -44,7 +44,6 @@ public class PaymentService {
         }
 
         payment.updatePaymentStatus(PaymentStatus.COMPLETE);
-        paymentRepository.save(payment);
 
         return entityToResponsePaymentInfoDto(payment);
     }
@@ -52,18 +51,9 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public ResponsePaymentInfoDto getPayment(String paymentId, String role, String email) {
 
-        Optional<Payment> payment = switch (UserRole.fromString(role)) {
-            case ROLE_CUSTOMER, ROLE_OWNER ->
-                    paymentRepository.findByIdAndCreatedBy(UUID.fromString(paymentId), email);
-            case ROLE_MANAGER, ROLE_MASTER ->
-                    paymentRepository.findById(UUID.fromString(paymentId));
-        };
+        Payment payment = getPaymentByRole(paymentId, role, email);
 
-        if (payment.isEmpty()) {
-            throw new NotFoundException("Payment not found.");
-        }
-
-        return entityToResponsePaymentInfoDto(payment.get());
+        return entityToResponsePaymentInfoDto(payment);
     }
 
     @Transactional(readOnly = true)
@@ -81,15 +71,18 @@ public class PaymentService {
     }
 
     @Transactional
-    public ResponsePaymentInfoDto updatePayment(
-            String paymentId, String status, String role
+    public ResponsePaymentInfoDto cancelPay(
+            String paymentId, String status, String role, String email
     ) {
 
-        checkRole(role);
+        Payment payment = getPaymentByRole(paymentId, role, email);
 
-        Payment payment =
-                paymentRepository.findById(UUID.fromString(paymentId))
-                        .orElseThrow(() -> new NotFoundException("Payment not found."));
+        // 결제 COMPLETE -> PG (취소 요청) ->  결제 취소 성공 CANCEL
+
+        PaymentResult pgResult = PaymentResult.SUCCESS;
+        if (PaymentResult.FAIL.equals(pgResult)) {
+            throw new BadRequestException("Pay failed.");
+        }
 
         payment.updatePaymentStatus(PaymentStatus.fromString(status));
 
@@ -99,7 +92,7 @@ public class PaymentService {
     @Transactional
     public Boolean deletePayment(String paymentId, String email, String role) {
 
-        checkRole(role);
+        checkMasterRole(role);
 
         Payment payment =
                 paymentRepository.findById(UUID.fromString(paymentId))
@@ -110,7 +103,22 @@ public class PaymentService {
         return true;
     }
 
-    private static void checkRole(String role) {
+    private Payment getPaymentByRole(String paymentId, String role, String email) {
+        Optional<Payment> optionalPayment = switch (UserRole.fromString(role)) {
+            case ROLE_CUSTOMER, ROLE_OWNER ->
+                    paymentRepository.findByIdAndCreatedBy(UUID.fromString(paymentId), email);
+            case ROLE_MANAGER, ROLE_MASTER ->
+                    paymentRepository.findById(UUID.fromString(paymentId));
+        };
+
+        if (optionalPayment.isEmpty()) {
+            throw new NotFoundException("Payment not found.");
+        }
+
+        return optionalPayment.get();
+    }
+
+    private static void checkMasterRole(String role) {
         if (!UserRole.ROLE_MASTER.equals(UserRole.fromString(role))) {
             throw new UnauthorizedException("Required permissions to access this resource");
         }
@@ -118,7 +126,6 @@ public class PaymentService {
 
     private ResponsePaymentInfoDto entityToResponsePaymentInfoDto(Payment payment) {
         return ResponsePaymentInfoDto.createPaymentInfo(
-                payment.getId().toString(),
                 payment.getStatus().name(),
                 payment.getCardNumber(),
                 payment.getPayDate(),

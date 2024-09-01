@@ -60,17 +60,17 @@ public class PaymentRepositoryCustomImpl implements  PaymentRepositoryCustom{
     private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
 
         List<OrderSpecifier<?>> orders = new ArrayList<>();
-        orders.add(new OrderSpecifier<>(DESC, order.createdAt));
-        orders.add(new OrderSpecifier<>(DESC, order.updatedAt));
+        orders.add(new OrderSpecifier<>(DESC, payment.createdAt));
+        orders.add(new OrderSpecifier<>(DESC, payment.updatedAt));
 
         for (Sort.Order sortOrder : pageable.getSort()) {
             com.querydsl.core.types.Order direction =
                     sortOrder.isAscending() ? ASC : DESC;
             switch (sortOrder.getProperty()) {
                 case "createdAt" ->
-                        orders.set(0, new OrderSpecifier<>(direction, order.createdAt));
+                        orders.set(0, new OrderSpecifier<>(direction, payment.createdAt));
                 case "updatedAt" ->
-                        orders.set(1, new OrderSpecifier<>(direction, order.updatedAt));
+                        orders.set(1, new OrderSpecifier<>(direction, payment.updatedAt));
                 default ->
                         orders.add(new OrderSpecifier<>(
                                 direction,
