@@ -1,7 +1,8 @@
 package com.sparta26.baemin.store.controller;
 
+import com.sparta26.baemin.dto.store.RequestSearchStoreDto;
 import com.sparta26.baemin.dto.store.RequestStoreDto;
-import com.sparta26.baemin.dto.store.ResponseFindStoreDto;
+import com.sparta26.baemin.dto.store.ResponseSearchStoreDto;
 import com.sparta26.baemin.dto.store.ResponseStoreDto;
 import com.sparta26.baemin.exception.exceptionsdefined.ForbiddenAccessException;
 import com.sparta26.baemin.jwt.CustomUserDetails;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +48,7 @@ public class StoreController {
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        ResponseStoreDto responseStoreDto = storeService.createStore(requestStoreDto, memberId, email);
+        ResponseStoreDto responseStoreDto = storeService.createStore(requestStoreDto, memberId);
         log.info("가게 생성 완료 | responseStoreDto = {} | Member = {}", responseStoreDto, memberId);
         return ResponseEntity.ok(responseStoreDto);
     }
@@ -57,23 +60,24 @@ public class StoreController {
      * @return
      */
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<?> findOneStore(@PathVariable("storeId") String storeId, Pageable pageable) {
+    public ResponseEntity<?> findOneStore(@PathVariable("storeId") UUID storeId) {
         log.info("가게 단건 조회 시도 중 | storeId = {}", storeId);
 
-        Page<ResponseFindStoreDto> responseFindStoreDto = storeService.findOneStore(storeId, pageable);
+        ResponseSearchStoreDto findStore = storeService.findOneStore(storeId);
 
-        log.info("가게 단건 조회 완료 | responseStoreDto = {}", responseFindStoreDto);
-        return ResponseEntity.ok(responseFindStoreDto);
+        log.info("가게 단건 조회 완료 | responseStoreDto = {}", findStore);
+        return ResponseEntity.ok(findStore);
     }
 
     /**
      * 가게 전체 조회
      */
     @GetMapping("/store")
-    public ResponseEntity<?> findAllStore(Pageable pageable) {
+    public ResponseEntity<?> findAllStore(Pageable pageable,
+                                          RequestSearchStoreDto condition) {
         log.info("가게 전체 조회 시도 중");
 
-        Page<ResponseFindStoreDto> responseFindStoreDto = storeService.findAllStore(pageable);
+        Page<ResponseSearchStoreDto> responseFindStoreDto = storeService.findAllStore(pageable, condition);
         return ResponseEntity.ok(responseFindStoreDto);
     }
 
