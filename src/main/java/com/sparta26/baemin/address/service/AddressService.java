@@ -1,5 +1,6 @@
 package com.sparta26.baemin.address.service;
 
+import com.sparta26.baemin.address.client.AddressClient;
 import com.sparta26.baemin.address.entity.Address;
 import com.sparta26.baemin.address.repository.AddressRepository;
 import com.sparta26.baemin.dto.address.RequestAddressDto;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class AddressService {
 
     private final AddressRepository addressRepository;
+    private final AddressClient addressClient;
 
     public Address createAdressInfo(RequestAddressDto requestAddressDto, CustomUserDetails userDetails) {
         Address address = new Address(requestAddressDto.getZipCode(),
@@ -36,6 +38,9 @@ public class AddressService {
 
     public Page<ResponseAddressDto>   getAddressService(Pageable page, Long memberId, CustomUserDetails userDetails) {
         Page<Address> addressPage=null;
+        if(!addressClient.getMemberInfo(userDetails.getEmail()).isPublic()){
+            throw new AlreadyDeletedException("삭제된 사용자입니다.");
+        }
         // 매니저일 경우 어떤 사용자의 정보 조회가능
         if(userDetails.getRole().equals(UserRole.ROLE_MANAGER.name())){
             addressPage= addressRepository.findAllByMemberIdAndIsPublic(page, memberId, true);
