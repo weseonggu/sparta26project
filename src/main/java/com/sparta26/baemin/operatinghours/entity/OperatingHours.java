@@ -72,7 +72,7 @@ public class OperatingHours extends AuditEntity {
     }
 
     public static OperatingHours toEntity(ResponseOperatingDto response) {
-        return new OperatingHours(UUID.fromString(response.getOperating_hours_id()),
+        return new OperatingHours(response.getOperating_hours_id(),
                 response.getOpening_time(),
                 response.getClosing_time(),
                 response.getOpen_days(),
@@ -88,7 +88,7 @@ public class OperatingHours extends AuditEntity {
      * 업데이트 메서드
      * @param requestOperatingHoursDto
      */
-    public OperatingHours update(RequestOperatingHoursDto requestOperatingHoursDto, String email) {
+    public OperatingHours update(RequestOperatingHoursDto requestOperatingHoursDto) {
         if (requestOperatingHoursDto.getOpening_time() != null) {
             this.openingTime = requestOperatingHoursDto.getOpening_time();
         }
@@ -101,7 +101,6 @@ public class OperatingHours extends AuditEntity {
         if (requestOperatingHoursDto.getLast_order() != null) {
             this.lastOrder = requestOperatingHoursDto.getLast_order();
         }
-        super.addUpdatedBy(email);
         return this;
     }
 }
