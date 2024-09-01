@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta26.baemin.ai.entity.Ai;
 import com.sparta26.baemin.ai.repository.AiRepository;
 import com.sparta26.baemin.dto.ai.RequestAiDto;
+import com.sparta26.baemin.dto.ai.RequestSearchAiDto;
 import com.sparta26.baemin.dto.ai.ResponseAiAnswerDto;
-import com.sparta26.baemin.dto.ai.ResponseAiPageDto;
+import com.sparta26.baemin.dto.ai.ResponseSearchAiDto;
 import com.sparta26.baemin.exception.exceptionsdefined.AiNotFoundException;
 import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
 import lombok.RequiredArgsConstructor;
@@ -89,11 +90,9 @@ public class AiService {
     /**
      * Ai 질답 리스트 검색, 관리자 가능
      */
-    public Page<ResponseAiPageDto> findAll(Pageable pageable) {
+    public Page<ResponseSearchAiDto> findAll(Pageable pageable, RequestSearchAiDto condition) {
 
-        Page<Ai> aiPage = aiRepository.findAllByIsPublic(pageable);
-
-        return aiPage.map(ResponseAiPageDto::new);
+        return aiRepository.findAllAi(pageable, condition);
     }
 
     /**
