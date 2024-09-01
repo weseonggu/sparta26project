@@ -2,6 +2,7 @@ package com.sparta26.baemin.member.service;
 
 import com.sparta26.baemin.dto.member.*;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
+import com.sparta26.baemin.exception.exceptionsdefined.UnauthorizedException;
 import com.sparta26.baemin.jwt.JWTUtil;
 import com.sparta26.baemin.member.entity.Member;
 import com.sparta26.baemin.member.entity.UserRole;
@@ -57,6 +58,9 @@ public class MemberService {
     public TokenAndMemberInfoDto attemptLogIn(RequestLogInDto member) {
         // DB에서 사용장 정보 가져 오기
         ResponseMemberInfoDto db_member = memberCacheService.getMemberInfo(member.getEmail());
+        if(!db_member.isPublic()){
+            throw  new UnauthorizedException("삭제된사용자 입니다.");
+        }
         // 비번 비교 로직, 토큰 생성
         String token = null;
         if(passwordEncoder.matches(member.getPassword(), db_member.getPassword())){
