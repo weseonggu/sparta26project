@@ -27,4 +27,5 @@ public class ResponseAddressDto extends AuditDto implements Serializable {
         this.roadAddress = address.getRoadAddress();
         this.roadAddressEnglish = address.getRoadAddressEnglish();
     }
+
 }

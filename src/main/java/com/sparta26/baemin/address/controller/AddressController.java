@@ -18,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 public class AddressController {
@@ -50,24 +52,17 @@ public class AddressController {
      */
     @GetMapping("v1/address/{member_id}")
     @PreAuthorize("hasAnyRole('CUSTOMER','MANAGER')")
-    public ResponseEntity<Page<?>> getAddress(@PathVariable("member_id") int member_id,
+    public ResponseEntity<Page<?>> getAddress(@PathVariable("member_id") Long member_id,
                                               @PageableDefault(size =10) Pageable pageable,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
-        addressService.getAddress(member_id, userDetails);
-        return null;
-    }
+        Page<ResponseAddressDto>   page = addressService.getAddressService(pageable, member_id, userDetails);
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(
+                "AddressFilter",
+                SimpleBeanPropertyFilter.filterOutAllExcept("zipCode","roadAddress", "roadAddressEnglish","id")
+        );
 
-    /**
-     * 주소 정보 변경 사용자와 매니저 만 접근 가능
-     * @param requestAddressDto
-     * @return
-     */
-    @PutMapping("v1/adress/update")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
-    public ResponseEntity<?> updateAddress(@Valid @RequestBody RequestAddressDto requestAddressDto,
-                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
-        addressService.updateAddress(userDetails, requestAddressDto);
-        return null;
+        objectMapper.setFilterProvider(filters);
+        return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
     /**
@@ -76,10 +71,11 @@ public class AddressController {
      * @return
      */
     @DeleteMapping("v1/adress/delete")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER', 'MASTER')")
-    public ResponseEntity<?> deleteAddress(@Valid @RequestBody RequestAddressDto requestAddressDto) {
-        addressService.deleteAddressService();
-        return null;
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
+    public ResponseEntity<?> deleteAddress(@RequestParam("id")UUID id,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        addressService.deleteAddressService(id, userDetails);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

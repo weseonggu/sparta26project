@@ -75,6 +75,24 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     /**
+     * 타인의 데이터에 접근시
+     * @param ex
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ExceptionHandler(NoAccessToOtherPeopleData.class)
+    public final ResponseEntity<FailMessage> handeleNoAccessToOtherPeopleDataException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(AlreadyDeletedException.class)
+    public final ResponseEntity<FailMessage> handeleAlreadyDeletedExceptionException(Exception ex, WebRequest request) throws Exception{
+        FailMessage message = new FailMessage(rTime.getTime(), request.getDescription(false), List.of(ex.getMessage()));
+        return new ResponseEntity<FailMessage>(message,HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * 이미 중복이 불가한 데이터를 저장 할 때 웅답
      * @param ex
      * @param request

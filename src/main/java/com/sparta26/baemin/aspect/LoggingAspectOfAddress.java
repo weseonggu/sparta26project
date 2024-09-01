@@ -23,7 +23,13 @@ public class LoggingAspectOfAddress {
      * @throws Throwable
      */
     @Around("execution(* com.sparta26.baemin.address.service.AddressService.createAdressInfo(..))")
-    public Object createMemberAround(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object createAddressAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        return aspectCommonLogic.redundantMethods(joinPoint);
+    }
+
+
+    @Around("execution(* com.sparta26.baemin.address.service.AddressService.deleteAddressService(..))")
+    public Object deleteAddressAround(ProceedingJoinPoint joinPoint) throws Throwable {
         return aspectCommonLogic.redundantMethods(joinPoint);
     }
 }
