@@ -1,6 +1,5 @@
 package com.sparta26.baemin.payment.entity;
 
-import com.sparta26.baemin.order.entity.OrderStatus;
 import lombok.Getter;
 
 @Getter

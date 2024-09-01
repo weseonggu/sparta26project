@@ -22,7 +22,6 @@ import java.util.List;
 
 import static com.querydsl.core.types.Order.ASC;
 import static com.querydsl.core.types.Order.DESC;
-import static com.sparta26.baemin.order.entity.QOrder.order;
 import static com.sparta26.baemin.payment.entity.QPayment.payment;
 
 @Repository
