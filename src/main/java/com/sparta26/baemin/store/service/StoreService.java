@@ -1,7 +1,8 @@
 package com.sparta26.baemin.store.service;
 
+import com.sparta26.baemin.dto.store.RequestSearchStoreDto;
 import com.sparta26.baemin.dto.store.RequestStoreDto;
-import com.sparta26.baemin.dto.store.ResponseFindStoreDto;
+import com.sparta26.baemin.dto.store.ResponseSearchStoreDto;
 import com.sparta26.baemin.dto.store.ResponseStoreDto;
 import com.sparta26.baemin.exception.exceptionsdefined.MemberStoreLimitExceededException;
 import com.sparta26.baemin.exception.exceptionsdefined.StoreNotFoundException;
@@ -33,7 +34,7 @@ public class StoreService {
      * 가게 생성, 가게주인만 생성가능
      */
     @Transactional
-    public ResponseStoreDto createStore(RequestStoreDto requestStoreDto, Long memberId, String email) {
+    public ResponseStoreDto createStore(RequestStoreDto requestStoreDto, Long memberId) {
         Optional<Store> findByMemberIdStore = storeRepository.findByMemberId(memberId);
         if (findByMemberIdStore.isPresent()) {
             throw new MemberStoreLimitExceededException("회원 당 1개의 가게만 등록 가능합니다.");
@@ -58,8 +59,7 @@ public class StoreService {
                 requestStoreDto.getDescription(),
                 requestStoreDto.getAddress(),
                 requestStoreDto.getPhone_number(),
-                member,
-                email);
+                member);
 
         Store savedStore = storeRepository.save(store);
 
@@ -70,16 +70,8 @@ public class StoreService {
      * id로 가게 단건 조회
      * @param storeId
      */
-    public Page<ResponseFindStoreDto> findOneStore(String storeId, Pageable pageable) {
-
-        if (!isValidUUID(storeId)) {
-            log.error("Invalid UUID = {}",storeId);
-            throw new UuidFormatException("Invalid UUID format");
-        }
-
-        Page<Store> pagingById = storeRepository.findByIdWithOperatingHours(UUID.fromString(storeId), pageable);
-
-        return pagingById.map(ResponseFindStoreDto::new);
+    public ResponseSearchStoreDto findOneStore(UUID storeId) {
+        return storeRepository.findOneStore(storeId);
     }
 
     /**
@@ -87,9 +79,8 @@ public class StoreService {
      * @param pageable
      * @return
      */
-    public Page<ResponseFindStoreDto> findAllStore(Pageable pageable) {
-        Page<Store> pagingStore = storeRepository.findPagingAll(pageable);
-        return pagingStore.map(ResponseFindStoreDto::new);
+    public Page<ResponseSearchStoreDto> findAllStore(Pageable pageable, RequestSearchStoreDto condition) {
+        return storeRepository.findPagingAll(pageable, condition);
     }
 
 
@@ -148,7 +139,7 @@ public class StoreService {
         if (store.isActive()) {
             active = "현재 활성화 상태입니다.";
         }else {
-            store.changeActive();
+            store.changeActive(true);
             active = "활성화 완료!!";
         }
         return active;
@@ -165,7 +156,7 @@ public class StoreService {
 
         Store store = storeRepository.findByMemberId(memberId).orElseThrow(() -> new StoreNotFoundException("not found store or Invalid user"));
         if (store.isActive()) {
-            store.changeActive();
+            store.changeActive(false);
             active = "비활성화 완료!!";
         } else {
             active = "현재 비활성화 상태입니다.";
@@ -212,43 +203,6 @@ public class StoreService {
                 storeRepository.deleteById(UUID.fromString(storeId), email);
             }
         }
-    }
-
-    /**
-     * storeId, memberId Client 통신 메서드
-     * @param storeId
-     * @param memberId
-     * @return
-     */
-    public ResponseStoreDto findByIdAndMemberId(String storeId, Long memberId) {
-
-        if (!isValidUUID(storeId)) {
-            log.error("Invalid UUID = {}",storeId);
-            throw new UuidFormatException("Invalid UUID format");
-        }
-
-        Store findStore = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
-                new StoreNotFoundException("not found store"));
-
-        return ResponseStoreDto.toDto(findStore);
-    }
-
-    /**
-     * ProductToStoreClientImpl 통신을 위한 메서드
-     * @param storeId
-     * @return
-     */
-    public ResponseStoreDto findById(String storeId) {
-
-        if (!isValidUUID(storeId)) {
-            log.error("Invalid UUID = {}",storeId);
-            throw new UuidFormatException("Invalid UUID format");
-        }
-
-        Store store = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() ->
-                new StoreNotFoundException("not found store"));
-
-        return ResponseStoreDto.toDto(store);
     }
 
     /**
