@@ -1,7 +1,9 @@
 package com.sparta26.baemin.operatinghours.controller;
 
 import com.sparta26.baemin.dto.operatinghours.RequestOperatingHoursDto;
+import com.sparta26.baemin.dto.operatinghours.RequestSearchOperatingDto;
 import com.sparta26.baemin.dto.operatinghours.ResponseOperatingDto;
+import com.sparta26.baemin.dto.operatinghours.ResponseSearchOperatingDto;
 import com.sparta26.baemin.exception.exceptionsdefined.ForbiddenAccessException;
 import com.sparta26.baemin.jwt.CustomUserDetails;
 import com.sparta26.baemin.jwt.ForContext;
@@ -9,11 +11,14 @@ import com.sparta26.baemin.operatinghours.service.OperatingHoursService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +38,7 @@ public class OperatingHoursController {
     @PostMapping("/operating/{storeId}")
     public ResponseEntity<?> createOperatingHours(@Valid @RequestBody RequestOperatingHoursDto requestOperatingHoursDto,
                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                  @PathVariable("storeId") String storeId) {
+                                                  @PathVariable("storeId") UUID storeId) {
 
         log.info("가게 운영시간 등록 시도 중 | storeId = {},  memberId = {}", storeId, customUserDetails.getForContext().getId());
         ForContext context = customUserDetails.getForContext();
@@ -68,7 +73,7 @@ public class OperatingHoursController {
             throw new ForbiddenAccessException("Unauthorized user");
         }
 
-        ResponseOperatingDto updatedOperatingHoursDto = operatingHoursService.updateOperatingHours(requestOperatingHoursDto, operatingId, memberId, email, role);
+        ResponseOperatingDto updatedOperatingHoursDto = operatingHoursService.updateOperatingHours(requestOperatingHoursDto, operatingId, email, role);
         log.info("가게 운영시간 수정 완료");
         return ResponseEntity.ok(updatedOperatingHoursDto);
     }
@@ -98,15 +103,17 @@ public class OperatingHoursController {
     }
 
     /**
-     * 가게 운영시간 단건 조회
-     * @param storeId
+     * 운영시간 전체 조회 | 관리자
+     * @param condition
      * @return
      */
-    @GetMapping("/operating/{storeId}")
-    public ResponseEntity<?> findOneOperatingHours(@PathVariable("storeId") String storeId) {
-        log.info("가게 운영시간 조회 시도 중 | storeId = {}", storeId);
+    @GetMapping("/operating")
+    @PreAuthorize("isAuthenticated() && hasRole('ROLE_MASTER')")
+    public ResponseEntity<?> findAllOperating(RequestSearchOperatingDto condition,
+                                                   Pageable pageable) {
+        log.info("가게 운영시간 전체 조회 시도 중 | condition = {}", condition);
 
-        List<ResponseOperatingDto> operatingHoursDtoList = operatingHoursService.findOneOperatingHours(storeId);
+        Page<ResponseSearchOperatingDto> operatingHoursDtoList = operatingHoursService.findAllOperating(pageable, condition);
         log.info("가게 운영시간 조회 완료");
         return ResponseEntity.ok(operatingHoursDtoList);
     }
