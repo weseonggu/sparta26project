@@ -1,6 +1,7 @@
 package com.sparta26.baemin.category.entity;
 
 import com.sparta26.baemin.common.entity.AuditEntity;
+import com.sparta26.baemin.dto.category.RequestCategoryDto;
 import com.sparta26.baemin.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -28,11 +29,26 @@ public class Category extends AuditEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-
     public Category(String name, Store store) {
-        this.id = UUID.randomUUID();
         this.name = name;
-        this.store = store;
+        if (store != null) {
+            this.store = store;
+        }
     }
 
+    public static Category createCategory(String name, Store store) {
+        return new Category(name, store);
+    }
+
+    public void addStore(Store store) {
+        this.store = store;
+        store.getCategories().add(this);
+    }
+
+    public Category update(RequestCategoryDto request) {
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
+        return this;
+    }
 }
