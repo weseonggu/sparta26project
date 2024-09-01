@@ -1,7 +1,9 @@
 package com.sparta26.baemin.operatinghours.service;
 
 import com.sparta26.baemin.dto.operatinghours.RequestOperatingHoursDto;
+import com.sparta26.baemin.dto.operatinghours.RequestSearchOperatingDto;
 import com.sparta26.baemin.dto.operatinghours.ResponseOperatingDto;
+import com.sparta26.baemin.dto.operatinghours.ResponseSearchOperatingDto;
 import com.sparta26.baemin.exception.exceptionsdefined.StoreNotFoundException;
 import com.sparta26.baemin.exception.exceptionsdefined.UuidFormatException;
 import com.sparta26.baemin.operatinghours.entity.OperatingHours;
@@ -10,10 +12,11 @@ import com.sparta26.baemin.store.entity.Store;
 import com.sparta26.baemin.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,17 +38,12 @@ public class OperatingHoursService {
      * @return
      */
     @Transactional
-    public ResponseOperatingDto createOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, String storeId, Long memberId, String email) {
+    public ResponseOperatingDto createOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, UUID storeId, Long memberId, String email) {
 
-        if (!isValidUUID(storeId)) {
-            log.error("UUID = {}", storeId);
-            throw new UuidFormatException("UUID 형식이 틀렸습니다.");
-        }
-
-        Store store = storeRepository.findByIdAndMemberId(UUID.fromString(storeId), memberId).orElseThrow(() ->
+        Store store = storeRepository.findByIdAndMemberId(storeId, memberId).orElseThrow(() ->
                 new StoreNotFoundException("본인의 상점만 등록 가능합니다."));
 
-        OperatingHours findOperating = operatingHoursRepository.findByStoreIdAndOpenDays(UUID.fromString(storeId),
+        OperatingHours findOperating = operatingHoursRepository.findByStoreIdAndOpenDays(storeId,
                 requestOperatingHoursDto.getOpen_days());
 
         if (findOperating != null) {
@@ -68,16 +66,17 @@ public class OperatingHoursService {
      * 가게 운영시간 수정, 가게주인 관리자 가능
      * @param requestOperatingHoursDto
      * @param operatingId
-     * @param memberId
      * @param email
      * @return
      */
     @Transactional
-    public ResponseOperatingDto updateOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, String operatingId, Long memberId, String email, String role) {
+    public ResponseOperatingDto updateOperatingHours(RequestOperatingHoursDto requestOperatingHoursDto, String operatingId, String email, String role) {
         if (!isValidUUID(operatingId)) {
             log.error("UUID = {}", operatingId);
             throw new UuidFormatException("UUID 형식이 틀렸습니다.");
         }
+
+
 
         OperatingHours updateOperating;
         if (role.equals("ROLE_OWNER")) {
@@ -85,13 +84,38 @@ public class OperatingHoursService {
             OperatingHours findOperating = operatingHoursRepository.findByIdAndCreatedBy(UUID.fromString(operatingId), email)
                     .orElseThrow(() -> new IllegalArgumentException("not found OperatingHours or Invalid user"));
 
-            updateOperating = findOperating.update(requestOperatingHoursDto, email);
+            List<OperatingHours> findOpendays = operatingHoursRepository.findWithOutByStoreIdAndOpenDays(findOperating.getStore().getId(),
+                    findOperating.getOpenDays());
+
+            if (findOpendays != null) {
+                for (OperatingHours findOpenday : findOpendays) {
+                    if (findOpenday.getOpenDays().equals(requestOperatingHoursDto.getOpen_days())) {
+                        log.error("등록 시도한 요일 : {}", requestOperatingHoursDto.getOpen_days());
+                        throw new IllegalArgumentException(requestOperatingHoursDto.getOpen_days() + "은 이미 등록되어있습니다.");
+                    }
+                }
+            }
+
+            updateOperating = findOperating.update(requestOperatingHoursDto);
 
         } else {
 
             OperatingHours findOperating = operatingHoursRepository.findIsPublicById(UUID.fromString(operatingId)).orElseThrow(() ->
                     new IllegalArgumentException("not found OperatingHours"));
-            updateOperating = findOperating.update(requestOperatingHoursDto, email);
+
+            List<OperatingHours> findOpendays = operatingHoursRepository.findWithOutByStoreIdAndOpenDays(findOperating.getStore().getId(),
+                    findOperating.getOpenDays());
+
+            if (findOpendays != null) {
+                for (OperatingHours findOpenday : findOpendays) {
+                    if (findOpenday.getOpenDays().equals(requestOperatingHoursDto.getOpen_days())) {
+                        log.error("등록 시도한 요일 : {}", requestOperatingHoursDto.getOpen_days());
+                        throw new IllegalArgumentException(requestOperatingHoursDto.getOpen_days() + "은 이미 등록되어있습니다.");
+                    }
+                }
+            }
+
+            updateOperating = findOperating.update(requestOperatingHoursDto);
         }
 
         return ResponseOperatingDto.toDto(updateOperating);
@@ -121,23 +145,13 @@ public class OperatingHoursService {
     }
 
     /**
-     * 가게 운영시간 단건 조회
-     * @param storeId
+     * 운영시간 전체 조회 | 관리자
+     * @param pageable
+     * @param condition
      * @return
      */
-    public List<ResponseOperatingDto> findOneOperatingHours(String storeId) {
-        if (!isValidUUID(storeId)) {
-            log.error("UUID = {}", storeId);
-            throw new UuidFormatException("UUID 형식이 틀렸습니다.");
-        }
-
-        List<OperatingHours> operatingHoursList = operatingHoursRepository.findByStoreId(UUID.fromString(storeId));
-        List<ResponseOperatingDto> operatingHoursDtoList = new ArrayList<>();
-
-        for (OperatingHours operatingHours : operatingHoursList) {
-            operatingHoursDtoList.add(ResponseOperatingDto.toDto(operatingHours));
-        }
-        return operatingHoursDtoList;
+    public Page<ResponseSearchOperatingDto> findAllOperating(Pageable pageable, RequestSearchOperatingDto condition) {
+        return operatingHoursRepository.findAllOperating(pageable, condition);
     }
 
     /**
