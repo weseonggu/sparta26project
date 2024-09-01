@@ -2,6 +2,7 @@ package com.sparta26.baemin.deliveryzone.repository;
 
 import com.sparta26.baemin.deliveryzone.entity.DeliveryZone;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,4 +20,8 @@ public interface DeliveryZoneRepository extends JpaRepository<DeliveryZone, UUID
 
     @Query("select d from DeliveryZone d where d.store.id = :id and d.name <> :name and d.isPublic = true")
     List<DeliveryZone> findDuplicatedByStoreIdAndName(@Param("id") UUID id, @Param("name")String name);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update DeliveryZone d set d.isPublic = false, d.deletedBy = :email, d.deletedAt = local datetime where d.store.id = :id")
+    void deleteByStoreId(@Param("id") String storeId,@Param("email") String email);
 }

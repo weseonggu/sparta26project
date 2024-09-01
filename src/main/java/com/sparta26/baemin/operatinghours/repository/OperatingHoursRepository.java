@@ -25,7 +25,7 @@ public interface OperatingHoursRepository extends JpaRepository<OperatingHours, 
     Optional<OperatingHours> findIsPublicById(@Param("id") UUID id);
 
     @Modifying(clearAutomatically = true)
-    @Query("update OperatingHours o set o.isPublic = false, o.deletedBy = :email where o.store.id = :id")
+    @Query("update OperatingHours o set o.isPublic = false, o.deletedBy = :email, o.deletedAt = local datetime where o.store.id = :id")
     void deleteByStoreId(@Param("id") UUID uuid,@Param("email") String email);
 
     @Query("select o from OperatingHours o where o.store.id = :id and o.openDays <> :openDays and o.isPublic = true")
