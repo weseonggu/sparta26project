@@ -1,7 +1,6 @@
 package com.sparta26.baemin.member.service;
 
 import com.sparta26.baemin.dto.member.*;
-import com.sparta26.baemin.exception.exceptionsdefined.AlreadyDeletedException;
 import com.sparta26.baemin.exception.exceptionsdefined.LoginFailException;
 import com.sparta26.baemin.exception.exceptionsdefined.UnauthorizedException;
 import com.sparta26.baemin.jwt.JWTUtil;
