@@ -111,18 +111,17 @@ public class Order extends AuditEntity {
         this.status = status;
     }
 
+    public void updateOrder(String address, String orderRequest, String deliveryRequest) {
+        updateCommonFields(address, orderRequest, deliveryRequest);
+    }
+
+    public void cancelOrder(OrderStatus status) {
+        this.status = status;
+    }
+
     private void updateCommonFields(String address, String orderRequest, String deliveryRequest) {
         this.address = address;
         this.orderRequest = orderRequest;
         this.deliveryRequest = deliveryRequest;
-    }
-
-    public void updateOrderByCustomer(String address, String orderRequest, String deliveryRequest) {
-        updateCommonFields(address, orderRequest, deliveryRequest);
-    }
-
-    public void updateOrderByMaster(String address, String orderRequest, String deliveryRequest, OrderStatus status) {
-        updateCommonFields(address, orderRequest, deliveryRequest);
-        this.status = status;
     }
 }

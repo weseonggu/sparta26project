@@ -1,12 +1,11 @@
 package com.sparta26.baemin.order.controller;
 
-import com.sparta26.baemin.dto.order.RequestOrderCreateDto;
-import com.sparta26.baemin.dto.order.RequestOrderUpdateDto;
-import com.sparta26.baemin.dto.order.ResponseOrderCreateDto;
-import com.sparta26.baemin.dto.order.ResponseOrderDto;
+import com.sparta26.baemin.dto.order.*;
 import com.sparta26.baemin.exception.exceptionsdefined.NotFoundException;
 import com.sparta26.baemin.jwt.CustomUserDetails;
+import com.sparta26.baemin.order.RequestOrderCreateValidator;
 import com.sparta26.baemin.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,22 +23,28 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
+    private final RequestOrderCreateValidator validator;
+    @InitBinder("requestOrderCreateDto")
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(validator);
+    }
 
     /**
      * 주문 생성
      *
-     * @param request 주문생성에 필요한 데이터
+     * @param requestOrderCreateDto 주문생성에 필요한 데이터
      * @param customUserDetails 사용자 정보
      * @return {@link ResponseOrderCreateDto} 객체
      */
 
     @PostMapping
     public ResponseEntity<ResponseOrderCreateDto> createOrder(
-            @RequestBody RequestOrderCreateDto request,
+            @Valid @RequestBody RequestOrderCreateDto requestOrderCreateDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return ResponseEntity.ok(
-                orderService.createOrder(request, customUserDetails.getId()));
+                orderService.createOrder(
+                        requestOrderCreateDto, customUserDetails.getEmail()));
     }
 
     /**
@@ -97,10 +103,9 @@ public class OrderController {
      * @param customUserDetails 사용자 정보
      * @return {@link ResponseOrderDto} 객체
      */
-
-    @PatchMapping("/{orderId}")
+    @PutMapping("/{orderId}")
     public ResponseEntity<ResponseOrderDto> updateOrder(
-            @RequestBody RequestOrderUpdateDto request,
+            @Valid @RequestBody RequestOrderUpdateDto request,
             @PathVariable String orderId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
@@ -110,6 +115,23 @@ public class OrderController {
                         orderId,
                         customUserDetails.getId(),
                         customUserDetails.getForContext().getRole()
+                )
+        );
+    }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<ResponseOrderDto> changeOrderStatus(
+            @RequestBody RequestOrderStatusDto request,
+            @PathVariable String orderId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        return ResponseEntity.ok(
+                orderService.changeOrderStatus(
+                        request,
+                        orderId,
+                        customUserDetails.getId(),
+                        customUserDetails.getForContext().getRole(),
+                        customUserDetails.getEmail()
                 )
         );
     }
