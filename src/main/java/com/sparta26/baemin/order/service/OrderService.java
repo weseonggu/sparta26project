@@ -192,7 +192,7 @@ public class OrderService {
     private Order getOrderByRole(String orderId, Long userId, UserRole userRole) {
         return switch (userRole) {
             case ROLE_CUSTOMER -> getOrderByIdAndMemberId(orderId, userId);
-            case ROLE_OWNER -> getOrderByIdAndStoreId(orderId);
+            case ROLE_OWNER -> getOrderByIdAndStoreId(orderId, userId);
             case ROLE_MANAGER, ROLE_MASTER -> getOrderById(orderId);
         };
     }
@@ -209,11 +209,10 @@ public class OrderService {
         ).orElseThrow(() -> new NotFoundException("Order not found."));
     }
 
-    private Order getOrderByIdAndStoreId(String orderId) {
+    private Order getOrderByIdAndStoreId(String orderId, Long getStoreByMemberId) {
 
-        // TODO createdBy 로 Store 가져오기 메서드 만들어달라고 하기
-
-        String storeId = "";
+        String storeId =
+                storeServiceClient.getStoreByMemberId(getStoreByMemberId).toString();
 
         return orderRepository.findByIdAndStore_IdAndIsPublic(
                 UUID.fromString(orderId),

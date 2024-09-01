@@ -189,8 +189,7 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler({
             BadRequestException.class,
             MemberStoreLimitExceededException.class,
-            UuidFormatException.class,
-            ClientException.class
+            UuidFormatException.class
     })
     public ResponseEntity<ErrorResponse> handlerBadRequest(Exception ex){
         String stackTrace = getStackTraceAsString(ex);
@@ -203,7 +202,8 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
             ProductNotFoundException.class,
             AiNotFoundException.class,
             MemberNotFoundException.class,
-            StoreNotFoundException.class
+            StoreNotFoundException.class,
+            ClientException.class
     })
     public ResponseEntity<ErrorResponse> handlerNotFound(Exception ex){
         String stackTrace = getStackTraceAsString(ex);
