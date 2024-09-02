@@ -38,8 +38,8 @@
 <hr>
 
 ### :busts_in_silhouette: 팀원 소개
-- 팀장 - 위성구 :walking:  [Github](https://github.com/Onestepp1)     
-- 팀원 - 이수정 :walking: [Github](https://github.com/gidopa)
+- 팀장 - 위성구 :walking:  [Github]  
+- 팀원 - 이수정 :walking: [Github]
 - 팀원 - 김원기 :walking: [Github](https://github.com/TrendFollow)
 <hr>
 
@@ -64,7 +64,7 @@
 <hr>
     
 ## 2. Erd
-![팀플 ERD]
+![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
 
 ## 3. 주요기능
 :arrow_right: 위성구 
