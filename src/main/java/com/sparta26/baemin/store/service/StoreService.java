@@ -192,21 +192,13 @@ public class StoreService {
                 storeRepository.deleteByIdAndMemberId(UUID.fromString(storeId), memberId, email);
 
             // 운영시간 false 변환
-            if (!findStore.getOperatingHours().isEmpty()) {
                 operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
-            }
             // 카테고리 false 변환
-            if (!findStore.getCategories().isEmpty()) {
                 categoryRepository.deleteByStoreId(storeId, email);
-            }
             // 배달지역 false 변환
-            if (!findStore.getDeliveryZones().isEmpty()) {
                 deliveryZoneRepository.deleteByStoreId(storeId, email);
-            }
             // 상품 false 변환
-            if (!findStore.getProducts().isEmpty()) {
                 productRepository.deleteByStoreId(storeId, email);
-            }
         } else {
             Store findStore = storeRepository.findById(UUID.fromString(storeId)).orElseThrow(() -> new StoreNotFoundException("not found store"));
 
@@ -220,21 +212,13 @@ public class StoreService {
                 storeRepository.deleteById(UUID.fromString(storeId), email);
 
                 // 운영시간 false 변환
-                if (!findStore.getOperatingHours().isEmpty()) {
                     operatingHoursRepository.deleteByStoreId(UUID.fromString(storeId), email);
-                }
                 // 카테고리 false 변환
-                if (!findStore.getCategories().isEmpty()) {
                     categoryRepository.deleteByStoreId(storeId, email);
-                }
                 // 배달지역 false 변환
-                if (!findStore.getDeliveryZones().isEmpty()) {
                     deliveryZoneRepository.deleteByStoreId(storeId, email);
-                }
                 // 상품 false 변환
-                if (!findStore.getProducts().isEmpty()) {
                     productRepository.deleteByStoreId(storeId, email);
-                }
             }
         }
     }
