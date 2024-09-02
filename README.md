@@ -11,7 +11,7 @@
 
 [4. ERD](#4-erd)
 
-[5. API명세서](#5-API 명세서)
+[5. API명세서](#5-API명세서)
 
 
 ## 1. 개요
@@ -115,7 +115,7 @@
 ## 4. Erd
 ![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
 
-## 5. API 명세서
+## 5. API명세서
 [API 명세서](https://imported-turner-0f5.notion.site/e498bae6ae144848bbbae6963eacabb4?v=6f312b3188ba42aeb9bc0e1b1344758d&pvs=4)
 
 
