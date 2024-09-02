@@ -69,7 +69,10 @@
 ## 3. 주요기능
 :arrow_right: 위성구 
 본인 역할 : 
-
+  - JWT, Spring Security를 사용한 인증 인가 구현
+  - Member, Address 도메인 테이블의 CRUD 구현
+  - DDD(도메인 중심 설계): MSA로 리팩토링을 좀더 간단하게 하기위한 패키징 전략 사용
+  - 레디스를 사용한 회원 정보 캐싱
 :arrow_right: 이수정
 본인 역할 : 
 
