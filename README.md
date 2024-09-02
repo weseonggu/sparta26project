@@ -38,8 +38,8 @@
 <hr>
 
 ### :busts_in_silhouette: 팀원 소개
-- 팀장 - 위성구 :walking:  [Github]  
-- 팀원 - 이수정 :walking: [Github]
+- 팀장 - 위성구 :walking:  [Github](https://github.com/weseonggu)  
+- 팀원 - 이수정 :walking: [Github](https://github.com/Krystal-13)
 - 팀원 - 김원기 :walking: [Github](https://github.com/TrendFollow)
 <hr>
 
