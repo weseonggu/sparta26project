@@ -77,6 +77,17 @@
 
 :arrow_right: 김원기
 본인 역할 : 
+- RDS 데이터 베이스 연동
+
+- Entity 연관관계 매핑
+
+- querdsl 페이징 처리(정렬조건, 검색조건)
+
+- category, deliveryzone, operatinghours, product, store, ai CRUD 구현
+
+- aistudio ai를 RestTemplate 활용한 API 통신(상품 이름 추천 받기)
+
+- aop 활용한 로그처리, 커스텀 예외 클래스를 활용한 예외 처리
     
 ## 3. Erd
 ![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
