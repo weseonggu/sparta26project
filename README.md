@@ -9,12 +9,22 @@
 
 [3. 문제 해결](#3-문제해결)
 
-[4. ERD](#4-erd)
+[4. 서비스 구성 및 실행 방법](#4-서비스구성%20및%20실행%20방법)
 
-[5. API명세서](#5-API명세서)
+[5. Erd](#5-Erd)
+
+[6. API명세서](#6-API명세서)
 
 
 ## 1. 개요
+### :computer: 프로젝트 개요
+- 프로젝트 목적 : REST API를 활용하여 API 통신 목적의 프로젝트
+
+- 프로젝트 설명 : 모놀리틱으로 개발하였지만 MSA 전환 등을 고려하여 각 서비스를 독립적으로 운영하고 인터페이스 활용해 통신
+
+<hr>
+
+
 ### :computer: 기술 스택
 #### Platform
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
@@ -35,10 +45,6 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 
-
-
- 
- 
 <hr>
 
 ### :busts_in_silhouette: 팀원 소개
@@ -97,6 +103,8 @@
 
 - aop 활용한 로그처리, 커스텀 예외 클래스를 활용한 예외 처리
 
+  
+
 ## 3. 문제 해결
 :arrow_right: 발생한 문제
 
@@ -112,10 +120,25 @@
 
 
 
-## 4. Erd
+## 4. 서비스구성 및 실행 방법
+- JAVA 버전 : 17
+  
+- 스프링부트 버전 : 3.3.3
+
+- 설정 파일 : application.yml(로컬용), application-product.yml(배포용)
+
+  - 배포용 yml 파일은 로컬에서 보관
+
+- 실행 방법
+  - git clone repository-url
+  - chmod +x gradlew
+  - ./gradlew build
+  - ./gradlew run
+
+## 5. Erd
 ![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
 
-## 5. API명세서
+## 6. API명세서
 [API 명세서](https://imported-turner-0f5.notion.site/e498bae6ae144848bbbae6963eacabb4?v=6f312b3188ba42aeb9bc0e1b1344758d&pvs=4)
 
 
