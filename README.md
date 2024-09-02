@@ -5,9 +5,11 @@
 ## :mortar_board: 목차
 [1. 개요](#1-개요)
 
-[2. ERD](#2-erd)
+[2. 주요 기능](#2-주요기능)
 
-[3. 주요 기능](#3-주요기능)
+[3. ERD](#3-erd)
+
+[4. API명세서](#4-API명세서)
 
 
 ## 1. 개요
@@ -61,12 +63,8 @@
   - 진행 상태확인 및 대략적인 소모차트 예상 , 간단한 스크럼 회의 이후 스프린트 진행, 스프린트 리뷰 등의 방법으로 지속적인 커뮤니케이션 유지
   - 혼자 해결하기 어려운 부분들은 팀원들과 소통을 통해 다각적인 해결 시도
  
-<hr>
-    
-## 2. Erd
-![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
 
-## 3. 주요기능
+## 2. 주요기능
 :arrow_right: 위성구 
 본인 역할 : 
 
@@ -75,6 +73,14 @@
 
 :arrow_right: 김원기
 본인 역할 : 
+    
+## 3. Erd
+![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
+
+## 4. API 명세서
+[API 명세서](https://imported-turner-0f5.notion.site/e498bae6ae144848bbbae6963eacabb4?v=6f312b3188ba42aeb9bc0e1b1344758d&pvs=4)
+
+
 
 
 
