@@ -7,9 +7,11 @@
 
 [2. 주요 기능](#2-주요기능)
 
-[3. ERD](#3-erd)
+[3. 문제 해결](#3-문제해결)
 
-[4. API명세서](#4-API명세서)
+[4. ERD](#4-erd)
+
+[5. API명세서](#5-API명세서)
 
 
 ## 1. 개요
@@ -94,11 +96,16 @@
 - aistudio ai를 RestTemplate 활용한 API 통신(상품 이름 추천 받기)
 
 - aop 활용한 로그처리, 커스텀 예외 클래스를 활용한 예외 처리
-    
-## 3. Erd
+
+## 3. 문제 해결
+:arrow_right: 발생한 문제
+
+- 
+
+## 4. Erd
 ![팀플 ERD](https://github.com/weseonggu/sparta26project/blob/master/ERD.png)
 
-## 4. API 명세서
+## 5. API 명세서
 [API 명세서](https://imported-turner-0f5.notion.site/e498bae6ae144848bbbae6963eacabb4?v=6f312b3188ba42aeb9bc0e1b1344758d&pvs=4)
 
 
