@@ -99,7 +99,7 @@
 
 - category, deliveryzone, operatinghours, product, store, ai CRUD 구현
 
-- aistudio ai를 RestTemplate 활용한 API 통신(상품 이름 추천 받기)
+- Gemini ai를 RestTemplate 활용한 API 통신(상품 이름 추천 받기)
 
 - aop 활용한 로그처리, 커스텀 예외 클래스를 활용한 예외 처리
 
